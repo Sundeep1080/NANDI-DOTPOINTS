@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NANDI · Signal Intelligence Engine v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0a0c10;
+  --bg2:      #10141c;
+  --bg3:      #161b26;
+  --border:   #1e2535;
+  --border2:  #2a3347;
+  --text:     #c8d0e0;
+  --text2:    #6b7a99;
+  --text3:    #3d4a66;
+  --bright:   #eef2ff;
+  --gold:     #f5c842;
+  --gold2:    #b8901e;
+  --bull:     #00e5a0;
+  --bull2:    #004d35;
+  --bear:     #ff4d6d;
+  --bear2:    #4d0015;
+  --neut:     #5b6aff;
+  --neut2:    #0d1240;
+  --warn:     #ff9900;
+  --mono:     'Space Mono', monospace;
+  --sans:     'Syne', sans-serif;
+  --r:        6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:13px;background:var(--bg)}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:
+    radial-gradient(ellipse at 10% 0%, rgba(245,200,66,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 100%, rgba(0,229,160,0.04) 0%, transparent 50%);
+}
+
+/* ── HEADER ── */
+.masthead{
+  border-bottom:1px solid var(--border);
+  padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:linear-gradient(90deg,rgba(245,200,66,0.03) 0%,transparent 60%);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);
+  border-radius:8px;display:grid;place-items:center;
+  font-family:var(--mono);font-size:11px;font-weight:700;color:#000;
+  letter-spacing:-0.5px;flex-shrink:0;
+}
+.brand-name{font-family:var(--sans);font-size:20px;font-weight:800;color:var(--bright);letter-spacing:1px}
+.brand-sub{font-size:10px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-top:1px;font-family:var(--mono)}
+.masthead-pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:3px 9px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:0.5px;text-transform:uppercase;border:1px solid}
+.pill-gold{background:rgba(245,200,66,0.08);color:var(--gold);border-color:rgba(245,200,66,0.25)}
+.pill-bull{background:rgba(0,229,160,0.08);color:var(--bull);border-color:rgba(0,229,160,0.25)}
+.pill-dim{background:rgba(107,122,153,0.08);color:var(--text2);border-color:var(--border)}
+
+/* ── LAYOUT ── */
+.shell{max-width:1800px;margin:0 auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+
+/* ── UPLOAD ZONE ── */
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:10px;padding:28px;
+  text-align:center;cursor:pointer;transition:all .2s;
+  background:var(--bg2);
+}
+.upload-zone:hover,.upload-zone.drag-active{border-color:var(--gold);background:rgba(245,200,66,0.04)}
+.upload-zone i{font-size:24px;color:var(--gold);opacity:.6;margin-bottom:8px;display:block}
+.upload-zone h3{font-size:13px;color:var(--bright);margin-bottom:4px;font-weight:700}
+.upload-zone p{font-size:10px;color:var(--text2);font-family:var(--mono)}
+
+/* ── PROGRESS ── */
+.progress-bar-wrap{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--bull));width:0%;transition:width .3s;border-radius:2px}
+.status-line{font-family:var(--mono);font-size:10px;color:var(--text2);padding:6px 0}
+
+/* ── SECTION HEADERS ── */
+.sec-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);cursor:pointer;user-select:none;
+}
+.sec-header h2{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold);font-family:var(--mono);display:flex;align-items:center;gap:8px}
+.sec-header .chevron{font-size:10px;color:var(--text3);transition:transform .2s}
+.sec-header.open .chevron{transform:rotate(180deg)}
+.sec-body{display:none;padding-top:8px}
+.sec-body.open{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.card-title{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text2);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px}
+.card-title::before{content:'';width:3px;height:12px;background:var(--gold);border-radius:2px;flex-shrink:0}
+
+/* ── STAT GRID ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+.stat-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--bright);line-height:1}
+.stat-lbl{font-size:9px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;font-family:var(--mono)}
+.stat-sub{font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:1px}
+.c-bull{color:var(--bull)!important}
+.c-bear{color:var(--bear)!important}
+.c-gold{color:var(--gold)!important}
+.c-neut{color:var(--neut)!important}
+.c-warn{color:var(--warn)!important}
+
+/* ── SIGNAL TABLE ── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10px}
+thead{background:var(--bg3);position:sticky;top:0;z-index:2}
+thead th{padding:8px 10px;text-align:left;font-size:8px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border);
+  cursor:pointer;white-space:nowrap;user-select:none}
+thead th:hover{color:var(--gold)}
+thead th.s-asc::after{content:' ↑';color:var(--gold)}
+thead th.s-desc::after{content:' ↓';color:var(--gold)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:hover{background:rgba(255,255,255,0.02)}
+tbody td{padding:7px 10px;vertical-align:middle;white-space:nowrap}
+
+/* Row coloring by signal */
+tr.row-b1{background:linear-gradient(90deg,rgba(0,229,160,0.07) 0%,transparent 25%)}
+tr.row-b2{background:linear-gradient(90deg,rgba(0,229,160,0.05) 0%,transparent 20%)}
+tr.row-b3{background:linear-gradient(90deg,rgba(0,229,160,0.03) 0%,transparent 15%)}
+tr.row-s1{background:linear-gradient(90deg,rgba(255,77,109,0.07) 0%,transparent 25%)}
+tr.row-s2{background:linear-gradient(90deg,rgba(255,77,109,0.05) 0%,transparent 20%)}
+tr.row-s3{background:linear-gradient(90deg,rgba(255,77,109,0.03) 0%,transparent 15%)}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;
+  font-size:9px;font-weight:700;letter-spacing:0.5px;font-family:var(--mono);border:1px solid}
+.badge-bull{background:rgba(0,229,160,0.12);color:var(--bull);border-color:rgba(0,229,160,0.3)}
+.badge-bear{background:rgba(255,77,109,0.12);color:var(--bear);border-color:rgba(255,77,109,0.3)}
+.badge-neut{background:rgba(91,106,255,0.12);color:var(--neut);border-color:rgba(91,106,255,0.3)}
+.badge-gold{background:rgba(245,200,66,0.12);color:var(--gold);border-color:rgba(245,200,66,0.3)}
+.badge-win{background:rgba(0,229,160,0.1);color:var(--bull);border-color:rgba(0,229,160,0.25)}
+.badge-loss{background:rgba(255,77,109,0.1);color:var(--bear);border-color:rgba(255,77,109,0.25)}
+.badge-open{background:rgba(245,200,66,0.1);color:var(--gold);border-color:rgba(245,200,66,0.25)}
+.badge-exit{background:rgba(255,153,0,0.1);color:var(--warn);border-color:rgba(255,153,0,0.25)}
+.badge-dim{background:rgba(107,122,153,0.1);color:var(--text2);border-color:var(--border)}
+
+/* ── CORRELATION MATRIX ── */
+.corr-matrix{overflow-x:auto}
+.corr-table{border-collapse:collapse;font-family:var(--mono);font-size:9px}
+.corr-table th,.corr-table td{padding:5px 8px;text-align:center;border:1px solid var(--border);white-space:nowrap}
+.corr-table th{background:var(--bg3);color:var(--text2);font-size:8px;letter-spacing:1px}
+.corr-cell-strong-pos{background:rgba(0,229,160,0.25);color:var(--bull)}
+.corr-cell-mild-pos{background:rgba(0,229,160,0.12);color:var(--bull)}
+.corr-cell-neutral{background:rgba(107,122,153,0.08);color:var(--text2)}
+.corr-cell-mild-neg{background:rgba(255,77,109,0.12);color:var(--bear)}
+.corr-cell-strong-neg{background:rgba(255,77,109,0.25);color:var(--bear)}
+
+/* ── SECTOR CARDS ── */
+.sector-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.sector-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.sector-card-name{font-size:10px;font-weight:700;color:var(--bright);margin-bottom:6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sector-bar{height:4px;background:var(--border);border-radius:2px;margin-bottom:5px;overflow:hidden}
+.sector-bar-fill{height:100%;border-radius:2px;transition:width .4s}
+.sector-stats{display:flex;gap:8px;font-family:var(--mono);font-size:9px}
+
+/* ── LEAD-LAG TABLE ── */
+.leadlag-table td:first-child{font-weight:700;color:var(--bright)}
+
+/* ── FILTERS ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-row select,.filter-row input{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  color:var(--text);font-family:var(--mono);font-size:10px;padding:5px 10px;
+  outline:none;cursor:pointer;
+}
+.filter-row select:hover,.filter-row select:focus{border-color:var(--gold)}
+.btn{
+  padding:5px 14px;border-radius:var(--r);font-family:var(--mono);font-size:10px;
+  font-weight:700;letter-spacing:0.5px;cursor:pointer;border:1px solid;
+  transition:all .15s;text-transform:uppercase;
+}
+.btn-gold{background:rgba(245,200,66,0.1);color:var(--gold);border-color:rgba(245,200,66,0.3)}
+.btn-gold:hover{background:rgba(245,200,66,0.2)}
+.btn-dim{background:var(--bg3);color:var(--text2);border-color:var(--border)}
+.btn-dim:hover{border-color:var(--text2);color:var(--text)}
+
+/* ── TOAST ── */
+.toast-container{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:6px;z-index:999}
+.toast{padding:8px 14px;border-radius:var(--r);font-family:var(--mono);font-size:10px;
+  border:1px solid;animation:fadeIn .2s ease;max-width:320px}
+.toast-ok{background:rgba(0,229,160,0.1);color:var(--bull);border-color:rgba(0,229,160,0.3)}
+.toast-err{background:rgba(255,77,109,0.1);color:var(--bear);border-color:rgba(255,77,109,0.3)}
+.toast-info{background:rgba(245,200,66,0.1);color:var(--gold);border-color:rgba(245,200,66,0.3)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HVP METER ── */
+.hvp-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:3px}
+.hvp-fill{height:100%;border-radius:3px}
+
+/* ── SCORE RING ── */
+.score-badge{display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:50%;font-family:var(--mono);font-size:11px;font-weight:700;
+  border:2px solid}
+.score-s{background:rgba(0,229,160,0.15);color:var(--bull);border-color:rgba(0,229,160,0.4)}
+.score-a{background:rgba(0,229,160,0.08);color:var(--bull);border-color:rgba(0,229,160,0.25)}
+.score-b{background:rgba(245,200,66,0.1);color:var(--gold);border-color:rgba(245,200,66,0.3)}
+.score-c{background:rgba(255,77,109,0.08);color:var(--bear);border-color:rgba(255,77,109,0.25)}
+
+/* ── MEMORY BADGE ── */
+.mem-badge{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 9px;
+  background:rgba(91,106,255,0.08);color:var(--neut);
+  border:1px solid rgba(91,106,255,0.25);border-radius:var(--r);
+  font-family:var(--mono);font-size:9px;
+}
+.mem-dot{width:6px;height:6px;border-radius:50%;background:var(--neut);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:40px;color:var(--text2);font-family:var(--mono);font-size:11px}
+.empty-state .icon{font-size:32px;margin-bottom:12px;opacity:.3}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.tab{padding:7px 14px;font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;color:var(--text2);
+  border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── REGIME ROW ── */
+.regime-row{display:flex;gap:8px;flex-wrap:wrap}
+.regime-chip{
+  display:flex;align-items:center;gap:6px;padding:5px 10px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  font-family:var(--mono);font-size:9px;
+}
+.regime-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── INSIGHT BOX ── */
+.insight-box{
+  background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--gold);
+  border-radius:var(--r);padding:10px 14px;font-family:var(--mono);font-size:10px;
+  color:var(--text);line-height:1.6;margin-bottom:8px;
+}
+.insight-box strong{color:var(--gold)}
+.insight-box.bull{border-left-color:var(--bull)}
+.insight-box.bull strong{color:var(--bull)}
+.insight-box.bear{border-left-color:var(--bear)}
+.insight-box.bear strong{color:var(--bear)}
+.insight-box.neut{border-left-color:var(--neut)}
+.insight-box.neut strong{color:var(--neut)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="masthead">
+  <div class="brand">
+    <div class="brand-mark">N1</div>
+    <div>
+      <div class="brand-name">NANDI</div>
+      <div class="brand-sub">Signal Intelligence Engine · v1.0</div>
+    </div>
+  </div>
+  <div class="masthead-pills">
+    <span class="pill pill-gold" id="pill-symbols">— Symbols</span>
+    <span class="pill pill-bull" id="pill-signals">— Signals</span>
+    <span class="pill pill-dim" id="pill-memory">Memory: 0</span>
+    <span id="mem-badge-wrap"></span>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- UPLOAD -->
+  <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+       ondragover="event.preventDefault();this.classList.add('drag-active')"
+       ondragleave="this.classList.remove('drag-active')"
+       ondrop="handleDrop(event)">
+    <div style="font-size:24px;color:var(--gold);opacity:.6;margin-bottom:8px">⬆</div>
+    <h3>Drop CSV or click to upload</h3>
+    <p>Format: Date, Symbol, Sector, Index, Open, High, Low, Close — same as your export</p>
+  </div>
+  <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFileSelect(this)">
+
+  <!-- PROGRESS -->
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="status-line" id="statusLine">Ready — load a CSV to begin analysis</div>
+
+  <!-- REGIME STRIP -->
+  <div id="regimeStrip" style="display:none">
+    <div class="card">
+      <div class="card-title">Market Regime — Major Indices</div>
+      <div class="regime-row" id="regimeRow"></div>
+    </div>
+  </div>
+
+  <!-- SUMMARY STATS -->
+  <div id="summarySection" style="display:none">
+    <div class="stat-grid" id="statGrid"></div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div id="insightsSection" style="display:none">
+    <div class="card">
+      <div class="card-title">NANDI Insights — What the data is telling you</div>
+      <div id="insightsBody"></div>
+    </div>
+  </div>
+
+  <!-- MAIN TABS -->
+  <div id="mainTabs" style="display:none">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('signals')">Signals</div>
+      <div class="tab" onclick="switchTab('ledger')">Memory Ledger</div>
+      <div class="tab" onclick="switchTab('sectors')">Sector Breadth</div>
+      <div class="tab" onclick="switchTab('correlation')">Correlation</div>
+      <div class="tab" onclick="switchTab('leadlag')">Lead-Lag</div>
+    </div>
+
+    <!-- TAB: SIGNALS -->
+    <div class="tab-panel active" id="tab-signals">
+      <div class="filter-row" style="margin-bottom:10px">
+        <select id="fSector" onchange="renderSignalsTable()"><option value="all">All Sectors</option></select>
+        <select id="fSignal" onchange="renderSignalsTable()">
+          <option value="all">All Signals</option>
+          <option value="B1-OS">B1-OS</option><option value="B1-MOM">B1-MOM</option>
+          <option value="B2">B2</option><option value="B3">B3</option>
+          <option value="S1-OB">S1-OB</option><option value="S1-MOM">S1-MOM</option>
+          <option value="S2">S2</option><option value="S3">S3</option>
+        </select>
+        <select id="fIndex" onchange="renderSignalsTable()"><option value="all">All Indices</option></select>
+        <select id="fRegime" onchange="renderSignalsTable()">
+          <option value="all">All Regimes</option>
+          <option value="bull">Bull</option><option value="bear">Bear</option><option value="flat">Flat</option>
+        </select>
+        <button class="btn btn-gold" onclick="exportLedger()">Export Ledger JSON</button>
+        <button class="btn btn-dim" onclick="clearMemory()">Clear Memory</button>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text2);margin-left:4px">
+          Showing <strong id="fShowing" style="color:var(--bright)">0</strong> of <strong id="fTotal" style="color:var(--bright)">0</strong>
+        </span>
+      </div>
+      <div class="tbl-wrap"><table id="sigTable">
+        <thead><tr>
+          <th onclick="sortSignals('symbol')">Symbol</th>
+          <th onclick="sortSignals('sector')">Sector</th>
+          <th onclick="sortSignals('signal')">Signal</th>
+          <th onclick="sortSignals('score')">Score</th>
+          <th onclick="sortSignals('entry_date')">Date</th>
+          <th onclick="sortSignals('entry_price')">CMP</th>
+          <th onclick="sortSignals('atr')">ATR</th>
+          <th>TP / SL</th>
+          <th onclick="sortSignals('hvp')">HVP</th>
+          <th onclick="sortSignals('regime')">Regime</th>
+          <th onclick="sortSignals('sector_breadth')">SecBreadth</th>
+          <th onclick="sortSignals('mkt_breadth')">MktBreadth</th>
+          <th onclick="sortSignals('status')">Outcome</th>
+          <th onclick="sortSignals('pnl_pct')">P&L%</th>
+          <th>Index Corr</th>
+        </tr></thead>
+        <tbody id="sigBody"></tbody>
+      </table></div>
+    </div>
+
+    <!-- TAB: MEMORY LEDGER -->
+    <div class="tab-panel" id="tab-ledger">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">Accumulated Signal Memory — All Sessions</div>
+        <div id="ledgerStats" class="stat-grid" style="margin-bottom:12px"></div>
+        <div id="ledgerWinRate"></div>
+      </div>
+      <div class="tbl-wrap"><table id="ledgerTable">
+        <thead><tr>
+          <th>Symbol</th><th>Sector</th><th>Signal</th><th>Score</th>
+          <th>Entry Date</th><th>Entry ₹</th><th>TP</th><th>SL</th>
+          <th>Outcome</th><th>P&L%</th><th>Bars</th>
+          <th>HVP</th><th>Regime</th><th>SecBreadth</th><th>MktBreadth</th>
+        </tr></thead>
+        <tbody id="ledgerBody"></tbody>
+      </table></div>
+    </div>
+
+    <!-- TAB: SECTOR BREADTH -->
+    <div class="tab-panel" id="tab-sectors">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">Sector Breadth — % of stocks with bull signal today</div>
+        <div class="sector-grid" id="sectorGrid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Sector Win Rate from Memory Ledger</div>
+        <div class="sector-grid" id="sectorWinGrid"></div>
+      </div>
+    </div>
+
+    <!-- TAB: CORRELATION -->
+    <div class="tab-panel" id="tab-correlation">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">Stock↔Index Correlation (100-day rolling close)</div>
+        <div class="filter-row" style="margin-bottom:10px">
+          <select id="corrSector" onchange="renderCorrTable()"><option value="all">All Sectors</option></select>
+          <select id="corrIndex" onchange="renderCorrTable()"><option value="all">All Indices</option>
+            <option value="NSEI">NSEI (Broad)</option>
+            <option value="NSEBANK">NSEBANK</option>
+            <option value="CNXAUTO">CNXAUTO</option>
+            <option value="CNXFMCG">CNXFMCG</option>
+            <option value="CNXMETAL">CNXMETAL</option>
+            <option value="CNXPHARMA">CNXPHARMA</option>
+            <option value="NIFTY_FIN_SERVICE">NIFTY_FIN_SERVICE</option>
+          </select>
+        </div>
+        <div id="corrTableWrap" class="tbl-wrap"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Sector↔Sector Index Correlation Matrix</div>
+        <div id="sectorCorrWrap" class="corr-matrix"></div>
+      </div>
+    </div>
+
+    <!-- TAB: LEAD-LAG -->
+    <div class="tab-panel" id="tab-leadlag">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">Sector Lead-Lag — which sectors signal first?</div>
+        <div id="leadLagInsights"></div>
+      </div>
+      <div class="tbl-wrap"><table id="leadLagTable">
+        <thead><tr>
+          <th>Sector (Leader)</th>
+          <th>Follower Sector</th>
+          <th>Avg Lag (bars)</th>
+          <th>Occurrences</th>
+          <th>Correlation</th>
+          <th>Direction</th>
+          <th>Strength</th>
+        </tr></thead>
+        <tbody id="leadLagBody"></tbody>
+      </table></div>
+    </div>
+
+  </div><!-- /mainTabs -->
+
+</div><!-- /shell -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// NANDI v1 — Signal Intelligence Engine
+// Step 1: Data Spine, Signal Engine, Outcome Memory, Correlation
+// ═══════════════════════════════════════════════════════════════
+
+const STORAGE_KEY   = 'nandi_v1_ledger';
+const META_KEY      = 'nandi_v1_meta';
+const SCHEMA_VER    = 1;
+
+const HMA_FAST  = 9, HMA_SLOW = 10;
+const SMI_K = 10, SMI_D = 3, SMI_SM = 3;
+const SMI_BULL = 40, SMI_BEAR = -40;
+const ATR_LEN = 14;
+const MIN_BARS = 25;
+const TP_FIXED = 0.02, SL_FIXED = 0.04;
+const ATR_TP_MULT = 1.8, ATR_SL_MULT = 1.0;
+
+// MAJOR INDEX → sector correlation map
+const IDX_SECTOR_MAP = {
+  'CNXAUTO':         'Automobile and Auto Components',
+  'CNXFMCG':         'Fast Moving Consumer Goods',
+  'CNXMETAL':        'Metals & Mining',
+  'CNXPHARMA':       'Healthcare',
+  'CNXPSUBANK':      'Financial Services',
+  'NIFTY_FIN_SERVICE':'Financial Services',
+  'NIFTY_PVT_BANK':  'Financial Services',
+  'NSEBANK':         'Financial Services',
+  'CNXCONSUM':       'Consumer Durables',
+  'CRSLDX':          'Market Index',
+  'NSEI':            'Market Index'
+};
+
+// ── Global state ──────────────────────────────────────────────
+let allSignals    = [];
+let allStockData  = {};   // symbol → sorted rows
+let regimeData    = {};   // major index symbol → { trend, hv, hvp }
+let sectorBreadth = {};   // sector → { bull, bear, total, pct }
+let corrData      = {};   // symbol → { NSEI: r, NSEBANK: r, ... }
+let sectorCorrMatrix = {};// sectorA → sectorB → r
+let leadLagData   = [];
+let sortCol = 'score', sortDir = -1;
+
+// ── Utilities ─────────────────────────────────────────────────
+function toast(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type === 'ok' ? 'ok' : type === 'err' ? 'err' : 'info'}`;
+  el.textContent = msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function setProgress(pct, msg) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  if (msg) document.getElementById('statusLine').textContent = msg;
+}
+
+function parseDate(s) {
+  if (!s) return null;
+  const dt = new Date(s);
+  return isNaN(dt) ? null : dt;
+}
+
+function formatDate(d) {
+  if (!d) return '-';
+  const dt = typeof d === 'string' ? new Date(d) : d;
+  return dt.toISOString().slice(0, 10);
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined || isNaN(v)) return '-';
+  const s = (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+  return s;
+}
+
+function corrClass(r) {
+  if (r >= 0.7)  return 'corr-cell-strong-pos';
+  if (r >= 0.3)  return 'corr-cell-mild-pos';
+  if (r <= -0.7) return 'corr-cell-strong-neg';
+  if (r <= -0.3) return 'corr-cell-mild-neg';
+  return 'corr-cell-neutral';
+}
+
+// ── Math helpers ──────────────────────────────────────────────
+function wma(arr, endIdx, period) {
+  let num = 0, denom = 0;
+  for (let k = 0; k < period; k++) {
+    const w = period - k;
+    num += arr[endIdx - k] * w;
+    denom += w;
+  }
+  return denom > 0 ? num / denom : arr[endIdx];
+}
+
+function calcHMA(prices, period) {
+  const n = prices.length;
+  const half = Math.floor(period / 2);
+  const sq   = Math.floor(Math.sqrt(period));
+  const res  = new Array(n).fill(null);
+  for (let i = period - 1; i < n; i++) {
+    const wf = wma(prices, i, period);
+    const wh = wma(prices, i, half);
+    const diff = 2 * wh - wf;
+    const tmp = prices.slice(Math.max(0, i - sq + 1), i + 1);
+    if (tmp.length < sq) { res[i] = diff; continue; }
+    const difArr = [...(res.slice(Math.max(0, i - sq + 1), i).filter(x => x !== null)), diff];
+    if (difArr.length < sq) { res[i] = diff; continue; }
+    res[i] = wma(difArr, difArr.length - 1, sq);
+  }
+  return res;
+}
+
+function calcSMI(highs, lows, closes, kLen=10, d=3, sm=3) {
+  const n = closes.length;
+  const smi = new Array(n).fill(null);
+  const sig = new Array(n).fill(null);
+  const raw = new Array(n).fill(null);
+  for (let i = kLen - 1; i < n; i++) {
+    let hh = highs[i], ll = lows[i];
+    for (let j = 1; j < kLen; j++) { hh = Math.max(hh, highs[i-j]); ll = Math.min(ll, lows[i-j]); }
+    const hl = hh - ll || 1;
+    raw[i] = ((closes[i] - (hh + ll) / 2) / (hl / 2)) * 100;
+  }
+  // Double EMA smoothing
+  function ema(arr, len, start) {
+    const r = new Array(arr.length).fill(null);
+    let first = -1;
+    for (let i = start || 0; i < arr.length; i++) if (arr[i] !== null) { first = i; break; }
+    if (first < 0) return r;
+    r[first] = arr[first];
+    const k = 2 / (len + 1);
+    for (let i = first + 1; i < arr.length; i++) if (arr[i] !== null) r[i] = arr[i] * k + r[i-1] * (1 - k);
+    return r;
+  }
+  const e1 = ema(raw, d); const e2 = ema(e1, d);
+  for (let i = 0; i < n; i++) smi[i] = e2[i];
+  const ss = ema(smi, sm);
+  for (let i = 0; i < n; i++) sig[i] = ss[i];
+  return { smi, sig };
+}
+
+function calcATR(highs, lows, closes, period=14) {
+  const n = closes.length;
+  const trs = new Array(n).fill(null);
+  for (let i = 1; i < n; i++) {
+    const hl = highs[i] - lows[i];
+    const hc = Math.abs(highs[i] - closes[i-1]);
+    const lc = Math.abs(lows[i] - closes[i-1]);
+    trs[i] = Math.max(hl, hc, lc);
+  }
+  const atrs = new Array(n).fill(null);
+  let sum = 0, cnt = 0;
+  for (let i = 1; i < Math.min(period + 1, n); i++) { sum += trs[i]; cnt++; }
+  if (cnt >= period) atrs[period] = sum / period;
+  for (let i = period + 1; i < n; i++) {
+    if (atrs[i-1] !== null && trs[i] !== null) atrs[i] = (atrs[i-1] * (period - 1) + trs[i]) / period;
+  }
+  return atrs;
+}
+
+function calcHV(closes, period=20) {
+  const n = closes.length;
+  const hvs = new Array(n).fill(null);
+  for (let i = period; i < n; i++) {
+    let sum2 = 0;
+    for (let j = 1; j <= period; j++) {
+      const lr = Math.log(closes[i - j + 1] / closes[i - j]);
+      sum2 += lr * lr;
+    }
+    hvs[i] = Math.sqrt(sum2 / period * 252) * 100;
+  }
+  return hvs;
+}
+
+function pearsonCorr(a, b) {
+  const n = a.length;
+  if (n < 5) return null;
+  let sx = 0, sy = 0, sxy = 0, sx2 = 0, sy2 = 0;
+  for (let i = 0; i < n; i++) { sx += a[i]; sy += b[i]; sxy += a[i]*b[i]; sx2 += a[i]*a[i]; sy2 += b[i]*b[i]; }
+  const num = n*sxy - sx*sy;
+  const den = Math.sqrt((n*sx2 - sx*sx) * (n*sy2 - sy*sy));
+  return den < 1e-10 ? 0 : parseFloat((num/den).toFixed(3));
+}
+
+// ── Signal detection ──────────────────────────────────────────
+function detectSignal(h9, h10, smi, smiSig, p) {
+  const n = h9.length - 1;
+  if (n < 2) return 'WAIT';
+  const h9d  = h9[n] - h9[n-1];
+  const h9dp = h9[n-1] - h9[n-2];
+  const h10d = h10[n] - h10[n-1];
+  const sv = smi[n], ss = smiSig[n];
+  const smiBull = sv > SMI_BULL, smiBear = sv < SMI_BEAR;
+  const smiOB = sv >= SMI_BULL, smiOS = sv <= SMI_BEAR;
+
+  const b1os  = h9d > 0 && h9dp <= 0 && smiOS;
+  const b1mom = h9d > 0 && h9dp <= 0 && smiBull;
+  const b2    = h9[n-1] <= h10[n-1] && h9[n] > h10[n] && smiOS;
+  const b3    = smiOS && h9[n] > h9[n-1] && h10[n] > h10[n-1] && !b2;
+
+  const s1ob  = h9d < 0 && h9dp >= 0 && smiOB;
+  const s1mom = h9d < 0 && h9dp >= 0 && smiBear;
+  const s2    = h9[n-1] >= h10[n-1] && h9[n] < h10[n] && smiOB;
+  const s3    = smiOB && h9[n] < h9[n-1] && h10[n] < h10[n-1] && !s2;
+
+  if (b2)    return 'B2';
+  if (b1os)  return 'B1-OS';
+  if (b1mom) return 'B1-MOM';
+  if (b3)    return 'B3';
+  if (s2)    return 'S2';
+  if (s1ob)  return 'S1-OB';
+  if (s1mom) return 'S1-MOM';
+  if (s3)    return 'S3';
+  return 'WAIT';
+}
+
+function signalScore(sig, smiVal, h9dir, weeklyTrend, rr, hvp) {
+  const base = { 'B1-OS':28,'B1-MOM':22,'B2':30,'B3':12,'S1-OB':28,'S1-MOM':22,'S2':30,'S3':12,'WAIT':0 };
+  let score = base[sig] || 0;
+  if (sig.startsWith('B') && weeklyTrend === 'bull') score += 15;
+  else if (sig.startsWith('S') && weeklyTrend === 'bear') score += 15;
+  else score += 5;
+  if (rr >= 2.5) score += 10;
+  else if (rr >= 1.5) score += 6;
+  else if (rr >= 1.0) score += 3;
+  if (hvp > 50) score += 8;
+  else if (hvp > 30) score += 4;
+  return Math.min(100, score);
+}
+
+function resolveOutcome(rows, entryIdx, tp, sl) {
+  let outcome = 'open', exitPrice = null, exitDate = null, barsToExit = null;
+  for (let i = entryIdx + 1; i < rows.length; i++) {
+    const h = rows[i].hi, l = rows[i].lo;
+    const hitTP = tp > rows[entryIdx].cl ? h >= tp : l <= tp;
+    const hitSL = tp > rows[entryIdx].cl ? l <= sl : h >= sl;
+    if (hitTP && hitSL) { outcome = 'loss'; exitPrice = sl; }
+    else if (hitTP)     { outcome = 'win';  exitPrice = tp; }
+    else if (hitSL)     { outcome = 'loss'; exitPrice = sl; }
+    if (outcome !== 'open') {
+      exitDate = rows[i].date;
+      barsToExit = i - entryIdx;
+      break;
+    }
+  }
+  const pnl = exitPrice !== null
+    ? parseFloat(((exitPrice - rows[entryIdx].cl) / rows[entryIdx].cl * 100).toFixed(2))
+    : null;
+  return { outcome, exitPrice, exitDate, pnl_pct: pnl, barsToExit };
+}
+
+// ── CSV Parsing ───────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return {};
+  const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+  const ci = h => headers.indexOf(h);
+  const bySymbol = {};
+  for (let i = 1; i < lines.length; i++) {
+    const parts = lines[i].split(',');
+    if (parts.length < 7) continue;
+    const date   = parts[ci('date')]?.trim();
+    const sym    = parts[ci('symbol')]?.trim().toUpperCase();
+    const sector = parts[ci('sector')]?.trim() || 'N/A';
+    const index  = parts[ci('index')]?.trim() || 'N/A';
+    const op = parseFloat(parts[ci('open')]);
+    const hi = parseFloat(parts[ci('high')]);
+    const lo = parseFloat(parts[ci('low')]);
+    const cl = parseFloat(parts[ci('close')]);
+    if (!sym || !date || isNaN(cl)) continue;
+    if (!bySymbol[sym]) bySymbol[sym] = { sector, index, rows: [] };
+    bySymbol[sym].rows.push({ date, op, hi, lo, cl });
+  }
+  for (const sym of Object.keys(bySymbol)) {
+    bySymbol[sym].rows.sort((a, b) => a.date.localeCompare(b.date));
+  }
+  return bySymbol;
+}
+
+// ── Main Processing ───────────────────────────────────────────
+async function processAll(bySymbol) {
+  const symbols = Object.keys(bySymbol);
+  const total   = symbols.length;
+  allStockData  = bySymbol;
+  allSignals    = [];
+
+  // Step 1: Compute regime from major indices
+  setProgress(5, 'Computing market regime from major indices...');
+  const majorSyms = symbols.filter(s => bySymbol[s].index === 'MAJOR INDEX');
+  regimeData = {};
+  for (const ms of majorSyms) {
+    const rows   = bySymbol[ms].rows;
+    const closes = rows.map(r => r.cl);
+    const hvs    = calcHV(closes);
+    const hvLast = hvs[hvs.length - 1] || 15;
+    const hvArr  = hvs.filter(v => v !== null);
+    const hvMax  = Math.max(...hvArr), hvMin = Math.min(...hvArr);
+    const hvp    = hvMax > hvMin ? Math.round((hvLast - hvMin) / (hvMax - hvMin) * 100) : 50;
+    const h9     = calcHMA(closes, HMA_FAST);
+    const h10    = calcHMA(closes, HMA_SLOW);
+    const n      = closes.length - 1;
+    const trend  = h9[n] > h10[n] ? 'bull' : h9[n] < h10[n] ? 'bear' : 'flat';
+    regimeData[ms] = { trend, hv: Math.round(hvLast * 10) / 10, hvp, rows };
+  }
+
+  const nsei = regimeData['NSEI'] || regimeData['CRSLDX'];
+  const mktRegime = nsei ? nsei.trend : 'flat';
+
+  await sleep(0);
+
+  // Step 2: Compute correlations with major indices
+  setProgress(15, 'Computing stock↔index correlations...');
+  const idxCloseMap = {};
+  for (const ms of majorSyms) {
+    const rows = bySymbol[ms].rows;
+    idxCloseMap[ms] = {};
+    for (const r of rows) idxCloseMap[ms][r.date] = r.cl;
+  }
+  corrData = {};
+
+  const stockSyms = symbols.filter(s => bySymbol[s].index !== 'MAJOR INDEX');
+  for (const sym of stockSyms) {
+    const rows = bySymbol[sym].rows;
+    corrData[sym] = {};
+    for (const ms of majorSyms) {
+      const idxMap = idxCloseMap[ms];
+      const paired = rows.filter(r => idxMap[r.date] !== undefined);
+      if (paired.length < 10) { corrData[sym][ms] = null; continue; }
+      const stockCl = paired.map(r => r.cl);
+      const idxCl   = paired.map(r => idxMap[r.date]);
+      // Use log returns for correlation
+      const sRet = [], iRet = [];
+      for (let i = 1; i < stockCl.length; i++) {
+        sRet.push(Math.log(stockCl[i] / stockCl[i-1]));
+        iRet.push(Math.log(idxCl[i] / idxCl[i-1]));
+      }
+      corrData[sym][ms] = pearsonCorr(sRet, iRet);
+    }
+  }
+
+  await sleep(0);
+
+  // Step 3: Sector-sector correlation (via MAJOR INDEX returns)
+  setProgress(30, 'Computing sector↔sector index correlation matrix...');
+  sectorCorrMatrix = {};
+  for (const ma of majorSyms) {
+    for (const mb of majorSyms) {
+      if (ma === mb) { if (!sectorCorrMatrix[ma]) sectorCorrMatrix[ma] = {}; sectorCorrMatrix[ma][mb] = 1.0; continue; }
+      const rowsA = bySymbol[ma].rows, rowsB = bySymbol[mb].rows;
+      const dateSetB = {};
+      for (const r of rowsB) dateSetB[r.date] = r.cl;
+      const paired = rowsA.filter(r => dateSetB[r.date] !== undefined);
+      if (paired.length < 10) {
+        if (!sectorCorrMatrix[ma]) sectorCorrMatrix[ma] = {};
+        sectorCorrMatrix[ma][mb] = null;
+        continue;
+      }
+      const aRet = [], bRet = [];
+      for (let i = 1; i < paired.length; i++) {
+        const prevA = rowsA[rowsA.findIndex(r => r.date === paired[i-1].date)];
+        const prevB = bySymbol[mb].rows.find(r => r.date === paired[i-1].date);
+        if (prevA && prevB) {
+          aRet.push(Math.log(paired[i].cl / prevA.cl));
+          bRet.push(Math.log(dateSetB[paired[i].date] / prevB.cl));
+        }
+      }
+      if (!sectorCorrMatrix[ma]) sectorCorrMatrix[ma] = {};
+      sectorCorrMatrix[ma][mb] = aRet.length >= 5 ? pearsonCorr(aRet, bRet) : null;
+    }
+  }
+
+  await sleep(0);
+
+  // Step 4: Process stocks — signal detection + sector breadth
+  setProgress(40, 'Running SALT signal engine on all symbols...');
+  const sectorBullCnt = {}, sectorTotalCnt = {};
+  const mktBullCnt = { bull: 0, total: 0 };
+
+  let processed = 0;
+  for (const sym of stockSyms) {
+    const info   = bySymbol[sym];
+    const rows   = info.rows;
+    if (rows.length < MIN_BARS) { processed++; continue; }
+
+    const closes = rows.map(r => r.cl);
+    const highs  = rows.map(r => r.hi);
+    const lows   = rows.map(r => r.lo);
+    const n      = rows.length - 1;
+
+    const h9  = calcHMA(closes, HMA_FAST);
+    const h10 = calcHMA(closes, HMA_SLOW);
+    const { smi, sig: smiSig } = calcSMI(highs, lows, closes, SMI_K, SMI_D, SMI_SM);
+    const atrs   = calcATR(highs, lows, closes, ATR_LEN);
+    const hvs    = calcHV(closes);
+
+    // Current signal
+    const signal = detectSignal(h9, h10, smi, smiSig, {});
+    const cmp    = closes[n];
+    const atr    = atrs[n] || cmp * 0.015;
+    const hvLast = hvs[n] || 15;
+
+    // HV percentile
+    const hvArr  = hvs.filter(v => v !== null);
+    const hvMax  = hvArr.length ? Math.max(...hvArr) : hvLast * 1.5;
+    const hvMin  = hvArr.length ? Math.min(...hvArr) : hvLast * 0.5;
+    const hvp    = hvMax > hvMin ? Math.round((hvLast - hvMin) / (hvMax - hvMin) * 100) : 50;
+
+    // Weekly trend (last 5 bars)
+    const weeklySlope = n >= 5 ? (closes[n] - closes[n-5]) / closes[n-5] : 0;
+    const weeklyTrend = weeklySlope > 0.005 ? 'bull' : weeklySlope < -0.005 ? 'bear' : 'flat';
+
+    // TP/SL: ATR-based first, fallback to fixed
+    let tp, sl;
+    if (atr && atr > 0 && atr < cmp * 0.1) {
+      if (signal.startsWith('B')) { tp = parseFloat((cmp + atr * ATR_TP_MULT).toFixed(2)); sl = parseFloat((cmp - atr * ATR_SL_MULT).toFixed(2)); }
+      else if (signal.startsWith('S')) { tp = parseFloat((cmp - atr * ATR_TP_MULT).toFixed(2)); sl = parseFloat((cmp + atr * ATR_SL_MULT).toFixed(2)); }
+      else { tp = parseFloat((cmp * (1 + TP_FIXED)).toFixed(2)); sl = parseFloat((cmp * (1 - SL_FIXED)).toFixed(2)); }
+    } else {
+      if (signal.startsWith('B')) { tp = parseFloat((cmp * (1 + TP_FIXED)).toFixed(2)); sl = parseFloat((cmp * (1 - SL_FIXED)).toFixed(2)); }
+      else if (signal.startsWith('S')) { tp = parseFloat((cmp * (1 - TP_FIXED)).toFixed(2)); sl = parseFloat((cmp * (1 + SL_FIXED)).toFixed(2)); }
+      else { tp = parseFloat((cmp * (1 + TP_FIXED)).toFixed(2)); sl = parseFloat((cmp * (1 - SL_FIXED)).toFixed(2)); }
+    }
+
+    const rr = Math.abs(tp - cmp) / Math.abs(cmp - sl);
+    const score = signalScore(signal, smi[n] || 0, h9[n] - h9[n-1], weeklyTrend, rr, hvp);
+
+    // Sector breadth tracking
+    const sec = info.sector;
+    if (!sectorBullCnt[sec]) { sectorBullCnt[sec] = 0; sectorTotalCnt[sec] = 0; }
+    sectorTotalCnt[sec]++;
+    const isBull = signal.startsWith('B') || (h9[n] > h10[n] && (smi[n] || 0) > 0);
+    if (isBull) sectorBullCnt[sec]++;
+    mktBullCnt.total++;
+    if (isBull) mktBullCnt.bull++;
+
+    // Stock-level regime: use NSEI if available, else stock's own trend
+    let stockRegime = mktRegime;
+    if (corrData[sym] && corrData[sym]['NSEI'] !== null && (corrData[sym]['NSEI'] || 0) > 0.5) {
+      stockRegime = mktRegime;
+    }
+
+    // Index correlation for this stock (vs NSEI primary)
+    const nseiCorr  = corrData[sym] ? (corrData[sym]['NSEI'] ?? null) : null;
+    const bankCorr  = corrData[sym] ? (corrData[sym]['NSEBANK'] ?? null) : null;
+    const sectorIdx = Object.entries(IDX_SECTOR_MAP).find(([k, v]) => v === sec);
+    const secIdxCorr= sectorIdx && corrData[sym] ? (corrData[sym][sectorIdx[0]] ?? null) : null;
+
+    // Build signal record
+    const sectorPct = sectorTotalCnt[sec] > 0
+      ? Math.round(sectorBullCnt[sec] / sectorTotalCnt[sec] * 100) : 0;
+    const mktPct = mktBullCnt.total > 0
+      ? Math.round(mktBullCnt.bull / mktBullCnt.total * 100) : 0;
+
+    const rec = {
+      id:             `${sym}_${signal}_${rows[n].date}`,
+      symbol:         sym,
+      sector:         sec,
+      index_tier:     info.index,
+      signal,
+      score,
+      entry_date:     rows[n].date,
+      entry_price:    cmp,
+      atr:            parseFloat((atr).toFixed(2)),
+      tp,
+      sl,
+      rr:             parseFloat(rr.toFixed(2)),
+      hvp,
+      hv:             parseFloat(hvLast.toFixed(1)),
+      regime:         stockRegime,
+      weekly_trend:   weeklyTrend,
+      sector_breadth: sectorPct,
+      mkt_breadth:    mktPct,
+      nsei_corr:      nseiCorr,
+      bank_corr:      bankCorr,
+      sec_idx_corr:   secIdxCorr,
+      status:         'open',
+      exit_price:     null,
+      exit_date:      null,
+      pnl_pct:        null,
+      bars_to_exit:   null,
+      schema_ver:     SCHEMA_VER
+    };
+
+    allSignals.push(rec);
+    processed++;
+
+    if (processed % 50 === 0) {
+      setProgress(40 + Math.round(processed / stockSyms.length * 40), `Processing ${processed}/${stockSyms.length} symbols...`);
+      await sleep(0);
+    }
+  }
+
+  // Compute sector breadth
+  sectorBreadth = {};
+  for (const sec of Object.keys(sectorTotalCnt)) {
+    sectorBreadth[sec] = {
+      bull:  sectorBullCnt[sec] || 0,
+      total: sectorTotalCnt[sec],
+      pct:   Math.round((sectorBullCnt[sec] || 0) / sectorTotalCnt[sec] * 100)
+    };
+  }
+
+  await sleep(0);
+
+  // Step 5: Resolve outcomes for existing ledger signals against new data
+  setProgress(82, 'Resolving outcomes from memory ledger...');
+  const ledger = loadLedger();
+  for (const rec of ledger) {
+    if (rec.status !== 'open') continue;
+    const sym = rec.symbol;
+    if (!bySymbol[sym]) continue;
+    const rows = bySymbol[sym].rows;
+    const entryIdx = rows.findIndex(r => r.date >= rec.entry_date);
+    if (entryIdx < 0 || entryIdx >= rows.length - 1) continue;
+    const { outcome, exitPrice, exitDate, pnl_pct, barsToExit } = resolveOutcome(rows, entryIdx, rec.tp, rec.sl);
+    if (outcome !== 'open') {
+      rec.status = outcome;
+      rec.exit_price = exitPrice;
+      rec.exit_date = exitDate;
+      rec.pnl_pct = pnl_pct;
+      rec.bars_to_exit = barsToExit;
+    }
+  }
+
+  // Step 6: Merge today's signals into ledger (avoid duplicates)
+  const existingIds = new Set(ledger.map(r => r.id));
+  let newAdded = 0;
+  for (const rec of allSignals) {
+    if (rec.signal === 'WAIT') continue;
+    if (!existingIds.has(rec.id)) {
+      ledger.push(rec);
+      newAdded++;
+    }
+  }
+  saveLedger(ledger);
+
+  await sleep(0);
+
+  // Step 7: Lead-lag analysis
+  setProgress(90, 'Computing lead-lag patterns across sectors...');
+  computeLeadLag(bySymbol, stockSyms);
+
+  setProgress(100, `Done — ${stockSyms.length} symbols processed, ${newAdded} new signals stored`);
+  toast(`${newAdded} new signals stored. ${ledger.length} total in memory.`, 'ok');
+
+  renderAll();
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Lead-Lag Computation ──────────────────────────────────────
+function computeLeadLag(bySymbol, stockSyms) {
+  // For each sector pair: find average lag in signal firing
+  const sectorSignalDates = {};
+  for (const sym of stockSyms) {
+    const info = bySymbol[sym];
+    const rows = info.rows;
+    if (rows.length < MIN_BARS) continue;
+    const closes = rows.map(r => r.cl);
+    const highs  = rows.map(r => r.hi);
+    const lows   = rows.map(r => r.lo);
+    const h9  = calcHMA(closes, HMA_FAST);
+    const h10 = calcHMA(closes, HMA_SLOW);
+    const { smi, sig } = calcSMI(highs, lows, closes, SMI_K, SMI_D, SMI_SM);
+    const sec = info.sector;
+    if (!sectorSignalDates[sec]) sectorSignalDates[sec] = [];
+    // Record all bull signal bars
+    for (let i = 2; i < rows.length; i++) {
+      const sl = detectSignalAt(h9, h10, smi, sig, i);
+      if (sl.startsWith('B')) sectorSignalDates[sec].push({ date: rows[i].date, bar: i, sym });
+    }
+  }
+
+  leadLagData = [];
+  const sectors = Object.keys(sectorSignalDates).filter(s => sectorSignalDates[s].length > 0);
+  for (const secA of sectors) {
+    for (const secB of sectors) {
+      if (secA === secB) continue;
+      const datesA = sectorSignalDates[secA].map(e => e.date).sort();
+      const datesB = sectorSignalDates[secB].map(e => e.date).sort();
+      if (datesA.length < 3 || datesB.length < 3) continue;
+      // Find cases where A signals, then B signals within 1-5 bars
+      let lags = [], found = 0;
+      for (const da of datesA) {
+        const later = datesB.filter(db => db > da);
+        if (later.length === 0) continue;
+        const nearest = later[0];
+        const daysDiff = (new Date(nearest) - new Date(da)) / 86400000;
+        if (daysDiff <= 7) { lags.push(daysDiff); found++; }
+      }
+      if (found < 2) continue;
+      const avgLag = parseFloat((lags.reduce((a, b) => a + b, 0) / lags.length).toFixed(1));
+      // Correlation between A and B index signals (simplified: pct overlap)
+      const allDates = [...new Set([...datesA, ...datesB])].sort();
+      const aVec = allDates.map(d => datesA.includes(d) ? 1 : 0);
+      const bVec = allDates.map(d => datesB.includes(d) ? 1 : 0);
+      const corr = pearsonCorr(aVec, bVec);
+      if (avgLag > 0 && found >= 2) {
+        leadLagData.push({
+          leader: secA, follower: secB,
+          avgLag, occurrences: found,
+          corr: corr !== null ? corr : 0,
+          direction: 'bull',
+          strength: found >= 5 ? 'strong' : found >= 3 ? 'moderate' : 'weak'
+        });
+      }
+    }
+  }
+  leadLagData.sort((a, b) => b.occurrences - a.occurrences);
+}
+
+function detectSignalAt(h9, h10, smi, smiSig, i) {
+  if (i < 2 || !h9[i] || !h10[i]) return 'WAIT';
+  const h9d  = h9[i] - h9[i-1];
+  const h9dp = h9[i-1] - h9[i-2];
+  const sv   = smi[i] || 0;
+  const smiOS = sv <= SMI_BEAR, smiOB = sv >= SMI_BULL;
+  const smiBull = sv > SMI_BULL, smiBear = sv < SMI_BEAR;
+  if (h9[i-1] <= h10[i-1] && h9[i] > h10[i] && smiOS) return 'B2';
+  if (h9d > 0 && h9dp <= 0 && smiOS) return 'B1-OS';
+  if (h9d > 0 && h9dp <= 0 && smiBull) return 'B1-MOM';
+  if (h9[i-1] >= h10[i-1] && h9[i] < h10[i] && smiOB) return 'S2';
+  if (h9d < 0 && h9dp >= 0 && smiOB) return 'S1-OB';
+  return 'WAIT';
+}
+
+// ── localStorage ──────────────────────────────────────────────
+function loadLedger() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveLedger(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) { toast('Storage full — export ledger to free space', 'err'); }
+}
+
+function clearMemory() {
+  if (!confirm('Clear all signal memory? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(META_KEY);
+  toast('Memory cleared', 'info');
+  renderLedger();
+  updatePills();
+}
+
+function exportLedger() {
+  const data = loadLedger();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `nandi_ledger_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast('Ledger exported', 'ok');
+}
+
+// ── Render: All ───────────────────────────────────────────────
+function renderAll() {
+  populateFilters();
+  renderRegimeStrip();
+  renderStats();
+  renderInsights();
+  renderSignalsTable();
+  renderLedger();
+  renderSectorBreadth();
+  renderCorrTable();
+  renderSectorCorrMatrix();
+  renderLeadLag();
+  updatePills();
+  document.getElementById('regimeStrip').style.display = 'block';
+  document.getElementById('summarySection').style.display = 'block';
+  document.getElementById('insightsSection').style.display = 'block';
+  document.getElementById('mainTabs').style.display = 'block';
+}
+
+function updatePills() {
+  const ledger = loadLedger();
+  const stockCount = Object.keys(allStockData).filter(s => allStockData[s]?.index !== 'MAJOR INDEX').length;
+  const sigCount = allSignals.filter(s => s.signal !== 'WAIT').length;
+  document.getElementById('pill-symbols').textContent = `${stockCount} Symbols`;
+  document.getElementById('pill-signals').textContent = `${sigCount} Signals`;
+  document.getElementById('pill-memory').textContent = `Memory: ${ledger.length}`;
+  if (ledger.length > 0) {
+    document.getElementById('mem-badge-wrap').innerHTML =
+      `<span class="mem-badge"><span class="mem-dot"></span>${ledger.length} records persisted</span>`;
+  }
+}
+
+// ── Render: Regime Strip ──────────────────────────────────────
+function renderRegimeStrip() {
+  const row = document.getElementById('regimeRow');
+  row.innerHTML = '';
+  for (const [sym, data] of Object.entries(regimeData)) {
+    const col = data.trend === 'bull' ? 'var(--bull)' : data.trend === 'bear' ? 'var(--bear)' : 'var(--text2)';
+    row.innerHTML += `<div class="regime-chip">
+      <div class="regime-dot" style="background:${col}"></div>
+      <span style="color:var(--text2);font-size:8px">${sym}</span>
+      <span style="color:${col};font-weight:700">${data.trend.toUpperCase()}</span>
+      <span style="color:var(--text3)">HVP:${data.hvp}%</span>
+    </div>`;
+  }
+}
+
+// ── Render: Stats ─────────────────────────────────────────────
+function renderStats() {
+  const ledger = loadLedger();
+  const active = allSignals.filter(s => s.signal !== 'WAIT');
+  const bulls  = active.filter(s => s.signal.startsWith('B'));
+  const bears  = active.filter(s => s.signal.startsWith('S'));
+  const resolved = ledger.filter(r => r.status !== 'open' && r.status !== 'na');
+  const wins   = resolved.filter(r => r.status === 'win');
+  const winRate = resolved.length ? Math.round(wins.length / resolved.length * 100) : null;
+  const avgPnl  = resolved.length ? (resolved.reduce((s, r) => s + (r.pnl_pct || 0), 0) / resolved.length).toFixed(1) : null;
+  const mktPct  = active.length ? Math.round(bulls.length / active.length * 100) : 0;
+
+  const grid = document.getElementById('statGrid');
+  const mkStat = (val, lbl, sub, cls='') =>
+    `<div class="stat"><div class="stat-val ${cls}">${val}</div><div class="stat-lbl">${lbl}</div>${sub?`<div class="stat-sub">${sub}</div>`:''}</div>`;
+
+  grid.innerHTML =
+    mkStat(active.length, 'Active Signals', `${bulls.length}B / ${bears.length}S`) +
+    mkStat(mktPct + '%', 'Market Breadth', `${bulls.length} bull signals`, mktPct > 55 ? 'c-bull' : mktPct < 45 ? 'c-bear' : 'c-neut') +
+    mkStat(ledger.length, 'Memory Records', `${resolved.length} resolved`, 'c-neut') +
+    mkStat(winRate !== null ? winRate + '%' : '—', 'Win Rate', `${wins.length}/${resolved.length} trades`, winRate !== null ? (winRate >= 55 ? 'c-bull' : winRate >= 40 ? 'c-gold' : 'c-bear') : '') +
+    mkStat(avgPnl !== null ? (avgPnl >= 0 ? '+' : '') + avgPnl + '%' : '—', 'Avg P&L', 'per resolved trade', avgPnl !== null ? (parseFloat(avgPnl) >= 0 ? 'c-bull' : 'c-bear') : '') +
+    mkStat(Object.keys(sectorBreadth).length, 'Sectors Live', '23 NSE sectors') +
+    mkStat(Object.keys(allStockData).filter(s => allStockData[s].index !== 'MAJOR INDEX').length, 'Stocks Scanned', 'NIFTY 50/Next50/Mid/Small') +
+    mkStat(Object.keys(regimeData).length, 'Regime Proxies', 'NSEI + sector indices');
+}
+
+// ── Render: Insights ─────────────────────────────────────────
+function renderInsights() {
+  const body = document.getElementById('insightsBody');
+  const active = allSignals.filter(s => s.signal !== 'WAIT');
+  const bulls  = active.filter(s => s.signal.startsWith('B'));
+  const bears  = active.filter(s => s.signal.startsWith('S'));
+
+  // Top sectors today
+  const secBull = {};
+  for (const s of bulls) secBull[s.sector] = (secBull[s.sector] || 0) + 1;
+  const topSecs = Object.entries(secBull).sort((a,b) => b[1]-a[1]).slice(0,3).map(([s,c]) => `${s}(${c})`);
+
+  // Strong signals
+  const strong = active.filter(s => s.score >= 60).sort((a,b) => b.score-a.score).slice(0,3);
+
+  // High corr stocks (>0.8 with NSEI in bull regime)
+  const nsei = regimeData['NSEI'];
+  const highCorr = active.filter(s => s.nsei_corr !== null && s.nsei_corr > 0.8 && s.signal.startsWith('B')).slice(0,3);
+  const lowCorr  = active.filter(s => s.nsei_corr !== null && s.nsei_corr < 0.2 && s.signal.startsWith('B')).slice(0,3);
+
+  // Lead-lag insight
+  const topLL = leadLagData.filter(l => l.strength === 'strong' || l.occurrences >= 4).slice(0,2);
+
+  body.innerHTML = '';
+
+  const mktBreadth = active.length ? Math.round(bulls.length / active.length * 100) : 0;
+  const mktClass = mktBreadth > 55 ? 'bull' : mktBreadth < 45 ? 'bear' : 'neut';
+  body.innerHTML += `<div class="insight-box ${mktClass}">
+    <strong>Market Breadth: ${mktBreadth}%</strong> — ${bulls.length} bull signals vs ${bears.length} bear signals across ${active.length} active stocks.
+    ${nsei ? `NSEI regime: <strong>${nsei.trend.toUpperCase()}</strong>, HVP ${nsei.hvp}%.` : ''}
+    ${topSecs.length ? `Leading sectors: <strong>${topSecs.join(', ')}</strong>.` : ''}
+  </div>`;
+
+  if (strong.length) {
+    body.innerHTML += `<div class="insight-box bull">
+      <strong>Top Signals Today:</strong> ${strong.map(s => `${s.symbol} (${s.signal}, score ${s.score})`).join(' · ')}
+    </div>`;
+  }
+
+  if (highCorr.length) {
+    body.innerHTML += `<div class="insight-box bull">
+      <strong>High NSEI Correlation (>0.80) Bull Signals:</strong> ${highCorr.map(s => `${s.symbol} [r=${s.nsei_corr}]`).join(', ')} — these move tightly with the index; enter only on confirmed NSEI bull regime.
+    </div>`;
+  }
+
+  if (lowCorr.length) {
+    body.innerHTML += `<div class="insight-box neut">
+      <strong>Low NSEI Correlation (<0.20) Bull Signals:</strong> ${lowCorr.map(s => `${s.symbol} [r=${s.nsei_corr}]`).join(', ')} — these are independent movers; valid even in flat market regime.
+    </div>`;
+  }
+
+  if (topLL.length) {
+    for (const ll of topLL) {
+      body.innerHTML += `<div class="insight-box">
+        <strong>Lead-Lag Pattern:</strong> When <strong>${ll.leader}</strong> fires bull signals, <strong>${ll.follower}</strong> tends to follow ~${ll.avgLag} days later (${ll.occurrences} occurrences, corr ${ll.corr.toFixed(2)}).
+      </div>`;
+    }
+  }
+}
+
+// ── Render: Signals Table ─────────────────────────────────────
+function populateFilters() {
+  const secs = [...new Set(allSignals.map(s => s.sector))].sort();
+  const secSel = document.getElementById('fSector');
+  secSel.innerHTML = '<option value="all">All Sectors</option>' + secs.map(s => `<option value="${s}">${s}</option>`).join('');
+
+  const idxs = [...new Set(allSignals.map(s => s.index_tier))].sort();
+  const idxSel = document.getElementById('fIndex');
+  idxSel.innerHTML = '<option value="all">All Indices</option>' + idxs.map(s => `<option value="${s}">${s}</option>`).join('');
+
+  const corrSecSel = document.getElementById('corrSector');
+  corrSecSel.innerHTML = '<option value="all">All Sectors</option>' + secs.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+function renderSignalsTable() {
+  const sec   = document.getElementById('fSector').value;
+  const sig   = document.getElementById('fSignal').value;
+  const idx   = document.getElementById('fIndex').value;
+  const reg   = document.getElementById('fRegime').value;
+
+  let data = allSignals.filter(s => s.signal !== 'WAIT');
+  if (sec !== 'all') data = data.filter(s => s.sector === sec);
+  if (sig !== 'all') data = data.filter(s => s.signal === sig);
+  if (idx !== 'all') data = data.filter(s => s.index_tier === idx);
+  if (reg !== 'all') data = data.filter(s => s.regime === reg);
+
+  data.sort((a, b) => {
+    const va = a[sortCol], vb = b[sortCol];
+    if (va === null || va === undefined) return 1;
+    if (vb === null || vb === undefined) return -1;
+    return (va < vb ? -1 : va > vb ? 1 : 0) * sortDir;
+  });
+
+  document.getElementById('fShowing').textContent = data.length;
+  document.getElementById('fTotal').textContent = allSignals.filter(s => s.signal !== 'WAIT').length;
+
+  const tbody = document.getElementById('sigBody');
+  tbody.innerHTML = '';
+  for (const r of data) {
+    const isBull = r.signal.startsWith('B');
+    const rowCls = r.signal === 'B1-OS' || r.signal === 'B1-MOM' ? 'row-b1' :
+                   r.signal === 'B2' ? 'row-b2' : r.signal === 'B3' ? 'row-b3' :
+                   r.signal === 'S1-OB' || r.signal === 'S1-MOM' ? 'row-s1' :
+                   r.signal === 'S2' ? 'row-s2' : r.signal === 'S3' ? 'row-s3' : '';
+    const sigBadge = isBull ? 'badge-bull' : 'badge-bear';
+    const scCls = r.score >= 70 ? 'score-s' : r.score >= 55 ? 'score-a' : r.score >= 40 ? 'score-b' : 'score-c';
+    const regCls = r.regime === 'bull' ? 'c-bull' : r.regime === 'bear' ? 'c-bear' : 'c-gold';
+    const corrStr = r.nsei_corr !== null ? `<span style="font-size:9px;color:${r.nsei_corr>0.7?'var(--bull)':r.nsei_corr<0.2?'var(--neut)':'var(--text2)'}">NSEI:${r.nsei_corr}</span>` : '-';
+    tbody.innerHTML += `<tr class="${rowCls}">
+      <td style="font-weight:700;color:var(--bright)">${r.symbol}</td>
+      <td style="color:var(--text2);font-size:9px;max-width:120px;overflow:hidden;text-overflow:ellipsis">${r.sector}</td>
+      <td><span class="badge ${sigBadge}">${r.signal}</span></td>
+      <td><div class="score-badge ${scCls}" style="width:28px;height:28px;font-size:10px">${r.score}</div></td>
+      <td style="color:var(--text2)">${r.entry_date}</td>
+      <td style="color:var(--bright)">₹${r.entry_price.toLocaleString('en-IN', {maximumFractionDigits:2})}</td>
+      <td style="color:var(--text2)">${r.atr}</td>
+      <td style="font-size:9px"><span class="c-bull">TP:${r.tp}</span> / <span class="c-bear">SL:${r.sl}</span></td>
+      <td><div style="min-width:60px">
+        <div style="font-size:9px;color:${r.hvp>50?'var(--bull)':r.hvp<30?'var(--bear)':'var(--text2)'}">P${r.hvp}</div>
+        <div class="hvp-bar"><div class="hvp-fill" style="width:${r.hvp}%;background:${r.hvp>60?'var(--bull)':r.hvp<30?'var(--bear)':'var(--gold)'}"></div></div>
+      </div></td>
+      <td class="${regCls}" style="font-weight:700;font-size:9px">${r.regime.toUpperCase()}</td>
+      <td style="font-size:9px">${r.sector_breadth}%</td>
+      <td style="font-size:9px">${r.mkt_breadth}%</td>
+      <td><span class="badge badge-open">OPEN</span></td>
+      <td>—</td>
+      <td>${corrStr}</td>
+    </tr>`;
+  }
+}
+
+function sortSignals(col) {
+  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = -1; }
+  document.querySelectorAll('#sigTable thead th').forEach(th => {
+    th.classList.remove('s-asc', 's-desc');
+  });
+  const ths = document.querySelectorAll('#sigTable thead th');
+  const cols = ['symbol','sector','signal','score','entry_date','entry_price','atr','','hvp','regime','sector_breadth','mkt_breadth','status','pnl_pct',''];
+  const idx2 = cols.indexOf(col);
+  if (idx2 >= 0 && ths[idx2]) ths[idx2].classList.add(sortDir === -1 ? 's-desc' : 's-asc');
+  renderSignalsTable();
+}
+
+// ── Render: Ledger ────────────────────────────────────────────
+function renderLedger() {
+  const ledger = loadLedger();
+  const resolved = ledger.filter(r => r.status !== 'open');
+  const wins     = resolved.filter(r => r.status === 'win');
+  const losses   = resolved.filter(r => r.status === 'loss');
+  const open     = ledger.filter(r => r.status === 'open');
+  const winRate  = resolved.length ? Math.round(wins.length / resolved.length * 100) : 0;
+  const avgPnl   = resolved.length ? (resolved.reduce((s,r) => s+(r.pnl_pct||0),0)/resolved.length).toFixed(1) : '—';
+
+  const lStats = document.getElementById('ledgerStats');
+  const ms = (v,l,s,c='') => `<div class="stat"><div class="stat-val ${c}">${v}</div><div class="stat-lbl">${l}</div>${s?`<div class="stat-sub">${s}</div>`:''}</div>`;
+  lStats.innerHTML =
+    ms(ledger.length,'Total Records',`${open.length} open`) +
+    ms(resolved.length,'Resolved',`${wins.length}W / ${losses.length}L`) +
+    ms(winRate+'%','Win Rate','from resolved trades',winRate>=55?'c-bull':winRate>=40?'c-gold':'c-bear') +
+    ms((avgPnl!=='—'?(parseFloat(avgPnl)>=0?'+':'')+avgPnl+'%':'—'),'Avg P&L','per trade',avgPnl!=='—'?(parseFloat(avgPnl)>=0?'c-bull':'c-bear'):'');
+
+  const tbody = document.getElementById('ledgerBody');
+  tbody.innerHTML = '';
+  const sorted = [...ledger].reverse();
+  for (const r of sorted) {
+    const isBull = r.signal?.startsWith('B');
+    const sBadge = isBull ? 'badge-bull' : 'badge-bear';
+    const oBadge = r.status==='win'?'badge-win':r.status==='loss'?'badge-loss':r.status==='open'?'badge-open':'badge-exit';
+    const pnlCls = r.pnl_pct !== null ? (r.pnl_pct >= 0 ? 'c-bull' : 'c-bear') : '';
+    tbody.innerHTML += `<tr>
+      <td style="font-weight:700;color:var(--bright)">${r.symbol}</td>
+      <td style="color:var(--text2);font-size:9px">${r.sector}</td>
+      <td><span class="badge ${sBadge}">${r.signal}</span></td>
+      <td style="color:var(--gold)">${r.score}</td>
+      <td style="color:var(--text2)">${r.entry_date}</td>
+      <td>₹${(r.entry_price||0).toLocaleString('en-IN',{maximumFractionDigits:2})}</td>
+      <td class="c-bull" style="font-size:9px">${r.tp}</td>
+      <td class="c-bear" style="font-size:9px">${r.sl}</td>
+      <td><span class="badge ${oBadge}">${r.status?.toUpperCase()}</span></td>
+      <td class="${pnlCls}" style="font-weight:700">${r.pnl_pct !== null ? (r.pnl_pct >= 0?'+':'') + r.pnl_pct + '%' : '—'}</td>
+      <td style="color:var(--text2)">${r.bars_to_exit || '—'}</td>
+      <td style="font-size:9px;color:${(r.hvp||0)>50?'var(--bull)':'var(--text2)'}">P${r.hvp||'—'}</td>
+      <td style="font-size:9px;color:${r.regime==='bull'?'var(--bull)':r.regime==='bear'?'var(--bear)':'var(--gold)'}">${(r.regime||'—').toUpperCase()}</td>
+      <td style="font-size:9px">${r.sector_breadth||'—'}%</td>
+      <td style="font-size:9px">${r.mkt_breadth||'—'}%</td>
+    </tr>`;
+  }
+}
+
+// ── Render: Sector Breadth ────────────────────────────────────
+function renderSectorBreadth() {
+  const grid = document.getElementById('sectorGrid');
+  grid.innerHTML = '';
+  const sorted = Object.entries(sectorBreadth).sort((a,b) => b[1].pct - a[1].pct);
+  for (const [sec, data] of sorted) {
+    const col = data.pct >= 60 ? 'var(--bull)' : data.pct <= 40 ? 'var(--bear)' : 'var(--gold)';
+    grid.innerHTML += `<div class="sector-card">
+      <div class="sector-card-name" title="${sec}">${sec}</div>
+      <div class="sector-bar"><div class="sector-bar-fill" style="width:${data.pct}%;background:${col}"></div></div>
+      <div class="sector-stats">
+        <span style="color:${col};font-weight:700">${data.pct}% bull</span>
+        <span style="color:var(--text3)">${data.bull}/${data.total}</span>
+      </div>
+    </div>`;
+  }
+
+  // Win rate per sector from ledger
+  const winGrid = document.getElementById('sectorWinGrid');
+  winGrid.innerHTML = '';
+  const ledger = loadLedger();
+  const secStats = {};
+  for (const r of ledger.filter(x => x.status !== 'open')) {
+    if (!secStats[r.sector]) secStats[r.sector] = { wins: 0, total: 0 };
+    secStats[r.sector].total++;
+    if (r.status === 'win') secStats[r.sector].wins++;
+  }
+  if (Object.keys(secStats).length === 0) {
+    winGrid.innerHTML = '<div style="color:var(--text2);font-family:var(--mono);font-size:10px;padding:12px">No resolved trades in memory yet — win rates will appear here as signals resolve.</div>';
+    return;
+  }
+  const sortedWR = Object.entries(secStats).sort((a,b) => (b[1].wins/b[1].total) - (a[1].wins/a[1].total));
+  for (const [sec, st] of sortedWR) {
+    const wr = Math.round(st.wins / st.total * 100);
+    const col = wr >= 60 ? 'var(--bull)' : wr >= 45 ? 'var(--gold)' : 'var(--bear)';
+    winGrid.innerHTML += `<div class="sector-card">
+      <div class="sector-card-name" title="${sec}">${sec}</div>
+      <div class="sector-bar"><div class="sector-bar-fill" style="width:${wr}%;background:${col}"></div></div>
+      <div class="sector-stats">
+        <span style="color:${col};font-weight:700">${wr}% WR</span>
+        <span style="color:var(--text3)">${st.wins}/${st.total}</span>
+      </div>
+    </div>`;
+  }
+}
+
+// ── Render: Correlation Table ─────────────────────────────────
+function renderCorrTable() {
+  const filterSec = document.getElementById('corrSector').value;
+  const filterIdx = document.getElementById('corrIndex').value;
+
+  const majorSyms = Object.keys(regimeData);
+  const idxCols   = filterIdx === 'all' ? majorSyms : [filterIdx].filter(s => majorSyms.includes(s));
+
+  let stocks = Object.keys(corrData);
+  if (filterSec !== 'all') stocks = stocks.filter(s => allStockData[s]?.sector === filterSec);
+  stocks = stocks.filter(s => allStockData[s]?.index !== 'MAJOR INDEX').slice(0, 100); // cap at 100
+
+  if (stocks.length === 0) { document.getElementById('corrTableWrap').innerHTML = '<div class="empty-state">No data for selected filters</div>'; return; }
+
+  let html = `<table style="font-family:var(--mono);font-size:9px;border-collapse:collapse;width:100%">
+    <thead><tr>
+      <th style="padding:6px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);text-align:left">Symbol</th>
+      <th style="padding:6px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border)">Sector</th>
+      ${idxCols.map(i => `<th style="padding:6px 10px;background:var(--bg3);color:var(--gold);border:1px solid var(--border)">${i}</th>`).join('')}
+      <th style="padding:6px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border)">Signal</th>
+    </tr></thead><tbody>`;
+
+  for (const sym of stocks) {
+    const sig = allSignals.find(s => s.symbol === sym);
+    const sigBadge = sig && sig.signal !== 'WAIT' ? `<span class="badge ${sig.signal.startsWith('B')?'badge-bull':'badge-bear'}" style="font-size:8px">${sig.signal}</span>` : '<span style="color:var(--text3)">—</span>';
+    html += `<tr>
+      <td style="padding:5px 10px;border:1px solid var(--border);color:var(--bright);font-weight:700">${sym}</td>
+      <td style="padding:5px 10px;border:1px solid var(--border);color:var(--text2);font-size:8px;max-width:100px;overflow:hidden;text-overflow:ellipsis">${allStockData[sym]?.sector || ''}</td>
+      ${idxCols.map(idx => {
+        const r = corrData[sym]?.[idx];
+        if (r === null || r === undefined) return `<td style="padding:5px 10px;border:1px solid var(--border);color:var(--text3)">—</td>`;
+        const cls = corrClass(r);
+        return `<td class="${cls}" style="padding:5px 10px;border:1px solid var(--border);text-align:center;font-weight:700">${r.toFixed(2)}</td>`;
+      }).join('')}
+      <td style="padding:5px 10px;border:1px solid var(--border);text-align:center">${sigBadge}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  document.getElementById('corrTableWrap').innerHTML = html;
+}
+
+// ── Render: Sector Corr Matrix ────────────────────────────────
+function renderSectorCorrMatrix() {
+  const majorSyms = Object.keys(sectorCorrMatrix);
+  if (majorSyms.length === 0) return;
+
+  let html = `<table class="corr-table">
+    <thead><tr><th>Index</th>${majorSyms.map(s => `<th>${s}</th>`).join('')}</tr></thead><tbody>`;
+
+  for (const ma of majorSyms) {
+    html += `<tr><th style="text-align:left;background:var(--bg3)">${ma}</th>`;
+    for (const mb of majorSyms) {
+      const r = sectorCorrMatrix[ma]?.[mb];
+      if (r === null || r === undefined) { html += `<td style="color:var(--text3)">—</td>`; continue; }
+      if (ma === mb) { html += `<td style="background:var(--bg3);color:var(--text2);font-weight:700">1.00</td>`; continue; }
+      const cls = corrClass(r);
+      html += `<td class="${cls}" style="font-weight:700">${r.toFixed(2)}</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  document.getElementById('sectorCorrWrap').innerHTML = html;
+}
+
+// ── Render: Lead-Lag ──────────────────────────────────────────
+function renderLeadLag() {
+  const body = document.getElementById('leadLagBody');
+  body.innerHTML = '';
+  const insights = document.getElementById('leadLagInsights');
+  insights.innerHTML = '';
+
+  const top = leadLagData.filter(l => l.occurrences >= 3).slice(0, 30);
+
+  if (top.length === 0) {
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px;font-family:var(--mono)">Insufficient signal history for lead-lag detection. Load more data sessions to build patterns.</td></tr>';
+    return;
+  }
+
+  const strong = top.filter(l => l.strength === 'strong').slice(0, 3);
+  for (const ll of strong) {
+    insights.innerHTML += `<div class="insight-box">
+      <strong>${ll.leader}</strong> leads <strong>${ll.follower}</strong> by ~${ll.avgLag} days
+      (${ll.occurrences} occurrences, corr: ${ll.corr.toFixed(2)}, strength: ${ll.strength.toUpperCase()})
+    </div>`;
+  }
+
+  for (const ll of top) {
+    const strCol = ll.strength==='strong'?'var(--bull)':ll.strength==='moderate'?'var(--gold)':'var(--text2)';
+    const corrCls = ll.corr>0.5?'c-bull':ll.corr<-0.3?'c-bear':'';
+    body.innerHTML += `<tr>
+      <td>${ll.leader}</td>
+      <td style="color:var(--text2)">${ll.follower}</td>
+      <td style="color:var(--gold)">${ll.avgLag}d</td>
+      <td style="color:var(--bright)">${ll.occurrences}</td>
+      <td class="${corrCls}">${ll.corr.toFixed(2)}</td>
+      <td><span class="badge badge-bull">${ll.direction.toUpperCase()}</span></td>
+      <td style="color:${strCol};font-weight:700;text-transform:uppercase">${ll.strength}</td>
+    </tr>`;
+  }
+}
+
+// ── Tab switching ─────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const names = ['signals','ledger','sectors','correlation','leadlag'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === `tab-${name}`);
+  });
+}
+
+// ── File handling ─────────────────────────────────────────────
+function handleFileSelect(input) {
+  if (input.files.length) readFile(input.files[0]);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag-active');
+  if (e.dataTransfer.files.length) readFile(e.dataTransfer.files[0]);
+}
+
+function readFile(file) {
+  setProgress(2, `Reading ${file.name}...`);
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    setProgress(4, 'Parsing CSV...');
+    const bySymbol = parseCSV(text);
+    const n = Object.keys(bySymbol).length;
+    if (n === 0) { toast('No valid data found in CSV', 'err'); return; }
+    toast(`Parsed ${n} symbols. Processing...`, 'info');
+    setTimeout(() => processAll(bySymbol), 50);
+  };
+  reader.readAsText(file);
+}
+
+// ── Init: load any existing ledger on page open ───────────────
+window.addEventListener('load', () => {
+  const ledger = loadLedger();
+  if (ledger.length > 0) {
+    updatePills();
+    toast(`Memory loaded: ${ledger.length} historical records ready`, 'info');
+  }
+});
+</script>
+</body>
+</html>
