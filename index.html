@@ -3,202 +3,315 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NANDI · Signal Intelligence Engine v2 — Self-Learning</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#d97706">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>NANDI · Self-Learning Signal Intelligence v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root{
-  --bg:#0a0c10;--bg2:#10141c;--bg3:#161b26;--border:#1e2535;--border2:#2a3347;
-  --text:#c8d0e0;--text2:#6b7a99;--text3:#3d4a66;--bright:#eef2ff;
-  --gold:#f5c842;--gold2:#b8901e;--bull:#00e5a0;--bull2:#004d35;
-  --bear:#ff4d6d;--bear2:#4d0015;--neut:#5b6aff;--neut2:#0d1240;
-  --warn:#ff9900;--purple:#a855f7;--teal:#14b8a6;
-  --mono:'Space Mono',monospace;--sans:'Syne',sans-serif;--r:6px;
+/* ═══ ROOT — LIGHT THEME (IRAVAT STYLE) ═══════════════════════ */
+:root {
+  --bg:      #f5f6fa; --bg2:     #ffffff; --bg3:     #f0f1f7;
+  --border:  #e2e5f0; --border2: #d0d4e8;
+  --text:    #2d3550; --text2:   #6b7699; --text3:   #adb5cc;
+  --bright:  #111828;
+  --amber:   #d97706; --amber-d: #92400e; --amber-g: rgba(217,119,6,0.07);
+  --bull:    #059669; --bull-d:  #064e3b; --bull-g:  rgba(5,150,105,0.07);
+  --bear:    #dc2626; --bear-d:  #7f1d1d; --bear-g:  rgba(220,38,38,0.07);
+  --exit:    #ea580c; --neut:    #4f46e5; --purple:  #7c3aed;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --r: 6px; --r-lg: 10px;
+  --sh-sm: 0 1px 3px rgba(45,53,80,0.07);
+  --sh-md: 0 4px 16px rgba(45,53,80,0.09);
+}
+body.dark-mode {
+  --bg:#0f1117; --bg2:#1a1d27; --bg3:#22263a;
+  --border:#2d3248; --border2:#3a3f5c;
+  --text:#c8cde4; --text2:#8892b0; --text3:#4a5270; --bright:#e8ecf8;
+  --amber:#f59e0b; --amber-d:#d97706; --amber-g:rgba(245,158,11,0.10);
+  --bull:#10b981; --bull-d:#059669; --bull-g:rgba(16,185,129,0.10);
+  --bear:#f87171; --bear-d:#dc2626; --bear-g:rgba(248,113,113,0.10);
+  --exit:#fb923c; --neut:#818cf8; --purple:#a78bfa;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:13px;background:var(--bg)}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;
-  background-image:radial-gradient(ellipse at 10% 0%,rgba(245,200,66,.04) 0%,transparent 50%),
-  radial-gradient(ellipse at 90% 100%,rgba(0,229,160,.04) 0%,transparent 50%)}
+html{font-size:14px}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;
+  background-image:radial-gradient(circle at 15% 10%,rgba(217,119,6,0.04) 0%,transparent 40%),
+  radial-gradient(circle at 85% 80%,rgba(5,150,105,0.04) 0%,transparent 40%);
+  transition:background .25s,color .25s}
+body::before{content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(45,53,80,0.06) 1px,transparent 1px);
+  background-size:24px 24px;pointer-events:none;z-index:0}
+body.dark-mode::before{background-image:radial-gradient(circle,rgba(200,205,228,0.04) 1px,transparent 1px)}
+body>*{position:relative;z-index:1}
 
-.masthead{border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(90deg,rgba(245,200,66,.03) 0%,transparent 60%)}
-.brand{display:flex;align-items:center;gap:10px}
-.brand-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-size:10px;font-weight:700;color:#000;flex-shrink:0}
-.brand-name{font-size:19px;font-weight:800;color:var(--bright);letter-spacing:1px}
-.brand-sub{font-size:9px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;font-family:var(--mono)}
+/* ═══ MASTHEAD ═══════════════════════════════════════════════ */
+.masthead{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:var(--sh-sm);position:sticky;top:0;z-index:100;
+  border-top:3px solid var(--amber)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-mark{width:38px;height:38px;background:linear-gradient(135deg,var(--amber),var(--amber-d));
+  border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-size:11px;
+  font-weight:700;color:#fff;flex-shrink:0;box-shadow:var(--sh-sm)}
+.brand-name{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--bright);letter-spacing:1px}
+.brand-sub{font-size:10px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;font-family:var(--mono)}
 .masthead-right{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.pill{padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border:1px solid}
-.pill-gold{background:rgba(245,200,66,.08);color:var(--gold);border-color:rgba(245,200,66,.25)}
-.pill-bull{background:rgba(0,229,160,.08);color:var(--bull);border-color:rgba(0,229,160,.25)}
-.pill-purple{background:rgba(168,85,247,.08);color:var(--purple);border-color:rgba(168,85,247,.25)}
-.pill-dim{background:rgba(107,122,153,.08);color:var(--text2);border-color:var(--border)}
-.pill-warn{background:rgba(255,153,0,.08);color:var(--warn);border-color:rgba(255,153,0,.25)}
-.mem-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--neut);animation:pulse 2s infinite;margin-right:4px}
+
+/* ═══ THEME TOGGLE ═══════════════════════════════════════════ */
+.theme-toggle{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:20px;cursor:pointer;font-family:var(--mono);
+  font-size:10px;font-weight:600;color:var(--text2);transition:all .2s;user-select:none}
+.theme-toggle:hover{border-color:var(--amber);color:var(--amber)}
+.tt-track{width:32px;height:16px;background:var(--border2);border-radius:8px;position:relative;transition:background .2s}
+.dark-mode .tt-track{background:var(--amber)}
+.tt-knob{position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .2s}
+.dark-mode .tt-knob{left:18px}
+
+/* ═══ PILLS ══════════════════════════════════════════════════ */
+.pill{padding:3px 9px;border-radius:20px;font-family:var(--mono);font-size:9px;font-weight:600;
+  letter-spacing:.5px;text-transform:uppercase;border:1px solid}
+.pill-amber{background:var(--amber-g);color:var(--amber);border-color:rgba(217,119,6,0.3)}
+.pill-bull{background:var(--bull-g);color:var(--bull);border-color:rgba(5,150,105,0.3)}
+.pill-purple{background:rgba(124,58,237,0.07);color:var(--purple);border-color:rgba(124,58,237,0.25)}
+.pill-dim{background:var(--bg3);color:var(--text2);border-color:var(--border)}
+.pill-bear{background:var(--bear-g);color:var(--bear);border-color:rgba(220,38,38,0.3)}
+.mem-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--neut);animation:pulse 2s infinite;margin-right:3px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-.shell{max-width:1900px;margin:0 auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+/* ═══ SHELL ══════════════════════════════════════════════════ */
+.shell{max-width:1900px;margin:0 auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
 
-.upload-zone{border:2px dashed var(--border2);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2)}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:rgba(245,200,66,.03)}
-.upload-zone h3{font-size:12px;color:var(--bright);margin-bottom:3px;font-weight:700}
-.upload-zone p{font-size:9px;color:var(--text2);font-family:var(--mono)}
+/* ═══ UPLOAD ═════════════════════════════════════════════════ */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--r-lg);padding:24px;
+  text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2);box-shadow:var(--sh-sm)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--amber);background:rgba(217,119,6,0.03)}
+.upload-zone h3{font-size:13px;color:var(--bright);margin-bottom:4px;font-weight:600;font-family:var(--mono)}
+.upload-zone p{font-size:10px;color:var(--text2);font-family:var(--mono)}
 
 .progress-bar-wrap{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
-.progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--bull));width:0%;transition:width .25s;border-radius:2px}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--amber),var(--bull));width:0%;transition:width .25s}
 .status-line{font-family:var(--mono);font-size:10px;color:var(--text2);padding:4px 0}
 
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px}
-.card-title{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
-.card-title::before{content:'';width:3px;height:11px;background:var(--gold);border-radius:2px;flex-shrink:0}
+/* ═══ CARDS ══════════════════════════════════════════════════ */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:14px 16px;box-shadow:var(--sh-sm)}
+.card-title{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text2);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:6px}
+.card-title::before{content:'';width:3px;height:12px;background:var(--amber);border-radius:2px;flex-shrink:0}
+.card-title.bull::before{background:var(--bull)}
+.card-title.bear::before{background:var(--bear)}
+.card-title.purple::before{background:var(--purple)}
 
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px}
-.stat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px}
-.stat-val{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--bright);line-height:1}
+/* ═══ STAT GRID ══════════════════════════════════════════════ */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.stat-val{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--bright);line-height:1}
 .stat-lbl{font-size:9px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;font-family:var(--mono);margin-top:2px}
 .stat-sub{font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:1px}
 .c-bull{color:var(--bull)!important}.c-bear{color:var(--bear)!important}
-.c-gold{color:var(--gold)!important}.c-neut{color:var(--neut)!important}
-.c-warn{color:var(--warn)!important}.c-purple{color:var(--purple)!important}
+.c-amber{color:var(--amber)!important}.c-neut{color:var(--neut)!important}
+.c-purple{color:var(--purple)!important}.c-exit{color:var(--exit)!important}
 
-/* ── SELF-LEARNING PANEL ── */
-.sl-panel{background:linear-gradient(135deg,rgba(168,85,247,.06) 0%,rgba(91,106,255,.06) 100%);border:1px solid rgba(168,85,247,.25);border-radius:var(--r);padding:14px 16px}
-.sl-panel-title{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--purple);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.sl-panel-title::before{content:'';width:3px;height:11px;background:var(--purple);border-radius:2px}
-.weight-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px}
-.weight-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px}
-.weight-card-sig{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--bright);margin-bottom:5px}
-.weight-bar-wrap{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:3px}
-.weight-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
-.weight-card-stats{display:flex;gap:8px;font-family:var(--mono);font-size:9px;color:var(--text2)}
-.weight-delta{font-family:var(--mono);font-size:9px;font-weight:700}
-.weight-delta.up{color:var(--bull)}.weight-delta.dn{color:var(--bear)}.weight-delta.same{color:var(--text3)}
-.ctx-key{font-family:var(--mono);font-size:8px;color:var(--text3);margin-top:3px}
+/* ═══ SELF-LEARNING PANEL ════════════════════════════════════ */
+.sl-panel{background:linear-gradient(135deg,rgba(124,58,237,0.05) 0%,rgba(79,70,229,0.05) 100%);
+  border:1px solid rgba(124,58,237,0.2);border-radius:var(--r-lg);padding:14px 16px}
+.sl-title{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--purple);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sl-title::before{content:'';width:3px;height:12px;background:var(--purple);border-radius:2px}
+.weight-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:6px}
+.wc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px}
+.wc-sig{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--bright);margin-bottom:5px;display:flex;justify-content:space-between}
+.wc-bar{height:4px;background:var(--border);border-radius:2px;margin-bottom:3px;overflow:hidden}
+.wc-fill{height:100%;border-radius:2px;transition:width .5s}
+.wc-stats{font-family:var(--mono);font-size:8px;color:var(--text2);display:flex;gap:8px}
+.delta-up{color:var(--bull);font-weight:700}.delta-dn{color:var(--bear);font-weight:700}.delta-eq{color:var(--text3)}
 
-/* ── ANOMALY ── */
-.anomaly-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:7px}
-.anomaly-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;border-left:3px solid}
-.anomaly-card.high{border-left-color:var(--bear)}
-.anomaly-card.medium{border-left-color:var(--warn)}
-.anomaly-card.low{border-left-color:var(--text3)}
-.anomaly-sym{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--bright)}
-.anomaly-type{font-size:9px;color:var(--text2);font-family:var(--mono);margin:2px 0}
-.anomaly-z{font-family:var(--mono);font-size:10px;font-weight:700}
-.anomaly-opp{font-size:9px;color:var(--gold);font-family:var(--mono);margin-top:4px;padding-top:4px;border-top:1px solid var(--border)}
-
-/* ── CASCADE MAP ── */
-.cascade-sector{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
-.cascade-sector-name{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--gold);margin-bottom:8px}
-.cascade-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap}
-.cascade-stock{padding:3px 8px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:700;border:1px solid}
-.cascade-stock.leader{background:rgba(0,229,160,.12);color:var(--bull);border-color:rgba(0,229,160,.3)}
-.cascade-stock.follower1{background:rgba(245,200,66,.08);color:var(--gold);border-color:rgba(245,200,66,.25)}
-.cascade-stock.follower2{background:rgba(107,122,153,.08);color:var(--text2);border-color:var(--border)}
-.cascade-arrow{color:var(--text3);font-size:10px}
-.cascade-lag{font-family:var(--mono);font-size:9px;color:var(--text3)}
-
-/* ── INTERDEPENDENCE ── */
-.dep-matrix{overflow-x:auto}
-.dep-table{border-collapse:collapse;font-family:var(--mono);font-size:9px}
-.dep-table th,.dep-table td{padding:5px 7px;border:1px solid var(--border);text-align:center;white-space:nowrap}
-.dep-table th{background:var(--bg3);color:var(--text2);font-size:8px}
-.dep-sp{background:rgba(0,229,160,.25);color:var(--bull)}
-.dep-mp{background:rgba(0,229,160,.1);color:var(--bull)}
-.dep-n{background:rgba(107,122,153,.08);color:var(--text2)}
-.dep-mn{background:rgba(255,77,109,.1);color:var(--bear)}
-.dep-sn{background:rgba(255,77,109,.25);color:var(--bear)}
-
-/* ── TABS ── */
-.tabs{display:flex;gap:3px;border-bottom:1px solid var(--border);margin-bottom:10px;flex-wrap:wrap}
-.tab{padding:6px 13px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
-.tab:hover{color:var(--text)}.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
-.tab-panel{display:none}.tab-panel.active{display:block}
-
-/* ── TABLE ── */
-.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+/* ═══ TABLES ═════════════════════════════════════════════════ */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2)}
 table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10px}
 thead{background:var(--bg3);position:sticky;top:0;z-index:2}
-thead th{padding:7px 9px;text-align:left;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;user-select:none}
-thead th:hover{color:var(--gold)}
-thead th.s-asc::after{content:' ↑';color:var(--gold)}thead th.s-desc::after{content:' ↓';color:var(--gold)}
+thead th{padding:8px 10px;text-align:left;font-size:8px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--text2);border-bottom:2px solid var(--border);
+  cursor:pointer;white-space:nowrap;user-select:none}
+thead th:hover{color:var(--amber)}
+thead th.sa::after{content:' ↑';color:var(--amber)}thead th.sd::after{content:' ↓';color:var(--amber)}
 tbody tr{border-bottom:1px solid var(--border);transition:background .12s}
-tbody tr:hover{background:rgba(255,255,255,.02)}
-tbody td{padding:6px 9px;vertical-align:middle;white-space:nowrap}
-tr.row-b1{background:linear-gradient(90deg,rgba(0,229,160,.07) 0%,transparent 20%)}
-tr.row-b2{background:linear-gradient(90deg,rgba(0,229,160,.04) 0%,transparent 15%)}
-tr.row-s1{background:linear-gradient(90deg,rgba(255,77,109,.07) 0%,transparent 20%)}
-tr.row-s2{background:linear-gradient(90deg,rgba(255,77,109,.04) 0%,transparent 15%)}
+tbody tr:hover{background:rgba(217,119,6,0.03)}
+tbody td{padding:7px 10px;vertical-align:middle;white-space:nowrap}
+tr.row-b1{border-left:3px solid var(--bull)}
+tr.row-b2{border-left:3px solid rgba(5,150,105,0.5)}
+tr.row-s1{border-left:3px solid var(--bear)}
+tr.row-s2{border-left:3px solid rgba(220,38,38,0.5)}
+tr.row-mb{border-left:3px solid var(--amber)}
 
-.badge{display:inline-flex;align-items:center;padding:2px 6px;border-radius:3px;font-size:8px;font-weight:700;letter-spacing:.5px;font-family:var(--mono);border:1px solid}
-.badge-bull{background:rgba(0,229,160,.1);color:var(--bull);border-color:rgba(0,229,160,.28)}
-.badge-bear{background:rgba(255,77,109,.1);color:var(--bear);border-color:rgba(255,77,109,.28)}
-.badge-gold{background:rgba(245,200,66,.1);color:var(--gold);border-color:rgba(245,200,66,.28)}
-.badge-win{background:rgba(0,229,160,.08);color:var(--bull);border-color:rgba(0,229,160,.22)}
-.badge-loss{background:rgba(255,77,109,.08);color:var(--bear);border-color:rgba(255,77,109,.22)}
-.badge-open{background:rgba(245,200,66,.08);color:var(--gold);border-color:rgba(245,200,66,.22)}
-.badge-dim{background:rgba(107,122,153,.08);color:var(--text2);border-color:var(--border)}
-.badge-purple{background:rgba(168,85,247,.1);color:var(--purple);border-color:rgba(168,85,247,.28)}
+/* ═══ BADGES ════════════════════════════════════════════════ */
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;
+  font-size:8px;font-weight:700;letter-spacing:.5px;font-family:var(--mono);border:1px solid}
+.b-bull{background:var(--bull-g);color:var(--bull);border-color:rgba(5,150,105,0.3)}
+.b-bear{background:var(--bear-g);color:var(--bear);border-color:rgba(220,38,38,0.3)}
+.b-amber{background:var(--amber-g);color:var(--amber);border-color:rgba(217,119,6,0.3)}
+.b-win{background:var(--bull-g);color:var(--bull);border-color:rgba(5,150,105,0.25)}
+.b-loss{background:var(--bear-g);color:var(--bear);border-color:rgba(220,38,38,0.25)}
+.b-open{background:rgba(79,70,229,0.07);color:var(--neut);border-color:rgba(79,70,229,0.25)}
+.b-dim{background:var(--bg3);color:var(--text2);border-color:var(--border)}
+.b-gold{background:linear-gradient(135deg,rgba(217,119,6,0.15),rgba(217,119,6,0.08));
+  color:var(--amber);border-color:var(--amber);font-weight:700}
+.b-mb{background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(124,58,237,0.08));
+  color:var(--amber);border-color:rgba(217,119,6,0.4)}
 
-.score-ring{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-family:var(--mono);font-size:10px;font-weight:700;border:2px solid}
-.score-s{background:rgba(0,229,160,.15);color:var(--bull);border-color:rgba(0,229,160,.4)}
-.score-a{background:rgba(0,229,160,.08);color:var(--bull);border-color:rgba(0,229,160,.22)}
-.score-b{background:rgba(245,200,66,.1);color:var(--gold);border-color:rgba(245,200,66,.3)}
-.score-c{background:rgba(255,77,109,.08);color:var(--bear);border-color:rgba(255,77,109,.22)}
+/* ═══ SCORE RING ════════════════════════════════════════════ */
+.score-ring{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border-radius:50%;font-family:var(--mono);font-size:10px;font-weight:700;border:2px solid}
+.sc-s{background:var(--bull-g);color:var(--bull);border-color:var(--bull)}
+.sc-a{background:rgba(5,150,105,0.05);color:var(--bull);border-color:rgba(5,150,105,0.4)}
+.sc-b{background:var(--amber-g);color:var(--amber);border-color:var(--amber)}
+.sc-c{background:var(--bear-g);color:var(--bear);border-color:rgba(220,38,38,0.4)}
 
-.insight-box{background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--gold);border-radius:var(--r);padding:9px 13px;font-family:var(--mono);font-size:10px;color:var(--text);line-height:1.6;margin-bottom:7px}
-.insight-box strong{color:var(--gold)}
-.insight-box.bull{border-left-color:var(--bull)}.insight-box.bull strong{color:var(--bull)}
-.insight-box.bear{border-left-color:var(--bear)}.insight-box.bear strong{color:var(--bear)}
-.insight-box.purple{border-left-color:var(--purple)}.insight-box.purple strong{color:var(--purple)}
-.insight-box.warn{border-left-color:var(--warn)}.insight-box.warn strong{color:var(--warn)}
+/* ═══ TABS ══════════════════════════════════════════════════ */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:12px;flex-wrap:wrap;
+  background:var(--bg2);border-radius:var(--r) var(--r) 0 0;padding:0 4px}
+.tab{padding:9px 14px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;cursor:pointer;color:var(--text2);border-bottom:3px solid transparent;
+  transition:all .15s;margin-bottom:-2px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+.tab-panel{display:none}.tab-panel.active{display:block}
 
-.filter-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
-.filter-row select,.filter-row input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:10px;padding:4px 9px;outline:none;cursor:pointer}
-.filter-row select:focus{border-color:var(--gold)}
-.btn{padding:4px 12px;border-radius:var(--r);font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.5px;cursor:pointer;border:1px solid;transition:all .15s;text-transform:uppercase}
-.btn-gold{background:rgba(245,200,66,.08);color:var(--gold);border-color:rgba(245,200,66,.28)}
-.btn-gold:hover{background:rgba(245,200,66,.16)}
+/* ═══ FILTER ROW ════════════════════════════════════════════ */
+.filter-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.filter-row select,.filter-row input{background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:10px;
+  padding:5px 10px;outline:none;cursor:pointer;transition:border .15s}
+.filter-row select:focus{border-color:var(--amber)}
+.btn{padding:5px 13px;border-radius:var(--r);font-family:var(--mono);font-size:9px;
+  font-weight:700;letter-spacing:.5px;cursor:pointer;border:1px solid;transition:all .15s;text-transform:uppercase}
+.btn-amber{background:var(--amber-g);color:var(--amber);border-color:rgba(217,119,6,0.3)}
+.btn-amber:hover{background:rgba(217,119,6,0.15)}
 .btn-dim{background:var(--bg3);color:var(--text2);border-color:var(--border)}
-.btn-purple{background:rgba(168,85,247,.08);color:var(--purple);border-color:rgba(168,85,247,.28)}
+.btn-dim:hover{border-color:var(--text2)}
+.btn-purple{background:rgba(124,58,237,0.07);color:var(--purple);border-color:rgba(124,58,237,0.25)}
 
-.hvp-bar{height:5px;background:var(--border);border-radius:3px;margin-top:2px;overflow:hidden}
-.hvp-fill{height:100%;border-radius:3px}
+/* ═══ INSIGHT BOX ═══════════════════════════════════════════ */
+.insight{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--amber);
+  border-radius:var(--r);padding:10px 14px;font-family:var(--mono);font-size:10px;
+  color:var(--text);line-height:1.65;margin-bottom:8px;box-shadow:var(--sh-sm)}
+.insight strong{color:var(--amber)}
+.insight.bull{border-left-color:var(--bull)}.insight.bull strong{color:var(--bull)}
+.insight.bear{border-left-color:var(--bear)}.insight.bear strong{color:var(--bear)}
+.insight.purple{border-left-color:var(--purple)}.insight.purple strong{color:var(--purple)}
+.insight.exit{border-left-color:var(--exit)}.insight.exit strong{color:var(--exit)}
 
+/* ═══ SECTOR GRID ═══════════════════════════════════════════ */
+.sector-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;box-shadow:var(--sh-sm)}
+.sc-bar{height:5px;background:var(--border);border-radius:3px;margin:4px 0;overflow:hidden}
+.sc-fill{height:100%;border-radius:3px;transition:width .4s}
+
+/* ═══ MULTIBAGGER CARD ══════════════════════════════════════ */
+.mb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.mb-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:12px 14px;box-shadow:var(--sh-sm);position:relative;overflow:hidden}
+.mb-card::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(217,119,6,0.05),transparent 60%);pointer-events:none}
+.mb-card.top3{border-color:var(--amber);box-shadow:0 0 16px rgba(217,119,6,0.15)}
+.mb-sym{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--bright)}
+.mb-sector{font-size:9px;color:var(--text2);font-family:var(--mono);margin:2px 0 8px}
+.mb-score-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.mb-score-fill{height:100%;background:linear-gradient(90deg,var(--bull),var(--amber));border-radius:3px}
+.mb-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.mb-stat{text-align:center;background:var(--bg3);border-radius:4px;padding:4px}
+.mb-stat-val{font-family:var(--mono);font-size:11px;font-weight:700}
+.mb-stat-lbl{font-size:8px;color:var(--text2);font-family:var(--mono)}
+
+/* ═══ CORRELATION MATRIX ═════════════════════════════════════ */
+.corr-table{border-collapse:collapse;font-family:var(--mono);font-size:9px}
+.corr-table th,.corr-table td{padding:5px 8px;border:1px solid var(--border);text-align:center;white-space:nowrap}
+.corr-table th{background:var(--bg3);color:var(--text2);font-size:8px;letter-spacing:1px}
+.cr-sp{background:rgba(5,150,105,0.2);color:var(--bull)}
+.cr-mp{background:rgba(5,150,105,0.08);color:var(--bull)}
+.cr-n{background:var(--bg3);color:var(--text2)}
+.cr-mn{background:rgba(220,38,38,0.08);color:var(--bear)}
+.cr-sn{background:rgba(220,38,38,0.2);color:var(--bear)}
+
+/* ═══ RETURN DIST CHART ══════════════════════════════════════ */
+.ret-chart{display:flex;align-items:flex-end;gap:3px;height:60px;padding:4px 0}
+.ret-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.ret-bar{width:100%;border-radius:2px 2px 0 0;transition:height .4s;min-height:2px}
+.ret-bar-lbl{font-family:var(--mono);font-size:7px;color:var(--text3)}
+
+/* ═══ HVP BAR ═══════════════════════════════════════════════ */
+.hvp-bar{height:4px;background:var(--border);border-radius:2px;margin-top:2px;overflow:hidden}
+.hvp-fill{height:100%;border-radius:2px}
+
+/* ═══ REGIME ROW ════════════════════════════════════════════ */
 .regime-row{display:flex;gap:7px;flex-wrap:wrap}
-.regime-chip{display:flex;align-items:center;gap:5px;padding:4px 9px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);font-family:var(--mono);font-size:9px}
-.regime-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.regime-chip{display:flex;align-items:center;gap:5px;padding:4px 10px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:9px;box-shadow:var(--sh-sm)}
+.regime-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
-.sector-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:7px}
-.sector-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px}
-.sector-bar{height:4px;background:var(--border);border-radius:2px;margin:4px 0;overflow:hidden}
-.sector-bar-fill{height:100%;border-radius:2px;transition:width .4s}
+/* ═══ CASCADE ════════════════════════════════════════════════ */
+.cascade-sec{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:7px;box-shadow:var(--sh-sm)}
+.cascade-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:6px}
+.cas-stock{padding:3px 8px;border-radius:20px;font-family:var(--mono);font-size:9px;font-weight:600;border:1px solid}
+.cas-leader{background:var(--bull-g);color:var(--bull);border-color:rgba(5,150,105,0.3)}
+.cas-follower{background:var(--amber-g);color:var(--amber);border-color:rgba(217,119,6,0.25)}
+.cas-new{background:var(--bg3);color:var(--text2);border-color:var(--border)}
 
+/* ═══ ANOMALY ════════════════════════════════════════════════ */
+.anom-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:7px}
+.anom-card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--border);
+  border-radius:var(--r);padding:10px 12px;box-shadow:var(--sh-sm)}
+.anom-card.high{border-left-color:var(--bear)}
+.anom-card.medium{border-left-color:var(--exit)}
+.anom-card.low{border-left-color:var(--text3)}
+.anom-opp{font-size:9px;color:var(--amber);font-family:var(--mono);margin-top:6px;padding-top:5px;border-top:1px solid var(--border)}
+
+/* ═══ RETURN CORR TABLE ══════════════════════════════════════ */
+.ret-corr-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;margin-bottom:5px}
+.ret-corr-sig{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--bright)}
+.ret-corr-bar{height:20px;background:var(--bg3);border-radius:3px;overflow:hidden;margin:4px 0;position:relative}
+.ret-corr-fill{height:100%;border-radius:3px;position:absolute;top:0}
+.ret-corr-txt{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:9px;font-weight:700;padding:0 6px}
+
+/* ═══ STOCK TP/SL TABLE ══════════════════════════════════════ */
+.tpsl-badge{display:inline-block;padding:2px 6px;border-radius:3px;font-family:var(--mono);font-size:9px;font-weight:700}
+.tpsl-learned{background:var(--bull-g);color:var(--bull)}
+.tpsl-prior{background:var(--bg3);color:var(--text2)}
+
+/* ═══ TOAST ══════════════════════════════════════════════════ */
 .toast-container{position:fixed;bottom:18px;right:18px;display:flex;flex-direction:column;gap:5px;z-index:999}
-.toast{padding:7px 12px;border-radius:var(--r);font-family:var(--mono);font-size:10px;border:1px solid;animation:fadeIn .2s ease}
-.toast-ok{background:rgba(0,229,160,.1);color:var(--bull);border-color:rgba(0,229,160,.28)}
-.toast-err{background:rgba(255,77,109,.1);color:var(--bear);border-color:rgba(255,77,109,.28)}
-.toast-info{background:rgba(245,200,66,.1);color:var(--gold);border-color:rgba(245,200,66,.28)}
+.toast{padding:8px 14px;border-radius:var(--r);font-family:var(--mono);font-size:10px;border:1px solid;animation:fadeIn .2s ease;box-shadow:var(--sh-md)}
+.toast-ok{background:var(--bull-g);color:var(--bull);border-color:rgba(5,150,105,0.3)}
+.toast-err{background:var(--bear-g);color:var(--bear);border-color:rgba(220,38,38,0.3)}
+.toast-info{background:var(--amber-g);color:var(--amber);border-color:rgba(217,119,6,0.3)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-/* Learning history sparkline */
-.sparkline{display:inline-flex;align-items:flex-end;gap:2px;height:24px}
-.spark-bar{width:4px;border-radius:1px;background:var(--bull);opacity:.6}
 </style>
 </head>
 <body>
 
 <header class="masthead">
   <div class="brand">
-    <div class="brand-mark">N2</div>
+    <div class="brand-mark">N3</div>
     <div>
       <div class="brand-name">NANDI</div>
-      <div class="brand-sub">Self-Learning Signal Intelligence · v2.0</div>
+      <div class="brand-sub">Self-Learning Signal Intelligence · v3.0</div>
     </div>
   </div>
   <div class="masthead-right">
-    <span class="pill pill-gold" id="pill-symbols">— Symbols</span>
+    <span class="pill pill-amber" id="pill-symbols">— Symbols</span>
     <span class="pill pill-bull" id="pill-signals">— Signals</span>
-    <span class="pill pill-purple" id="pill-learns">Learning: 0 sessions</span>
+    <span class="pill pill-purple" id="pill-learns"><span class="mem-dot"></span>Learning: 0</span>
     <span class="pill pill-dim" id="pill-memory">Memory: 0</span>
-    <span class="pill pill-warn" id="pill-anomalies" style="display:none">0 Anomalies</span>
+    <span class="pill pill-bear" id="pill-anomalies" style="display:none">0 Anomalies</span>
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <i class="fas fa-moon" style="font-size:10px"></i>
+      <div class="tt-track"><div class="tt-knob"></div></div>
+    </div>
   </div>
 </header>
 
@@ -209,35 +322,34 @@ tr.row-s2{background:linear-gradient(90deg,rgba(255,77,109,.04) 0%,transparent 1
        ondragover="event.preventDefault();this.classList.add('drag')"
        ondragleave="this.classList.remove('drag')"
        ondrop="handleDrop(event)">
-    <div style="font-size:22px;color:var(--gold);opacity:.5;margin-bottom:6px">⬆</div>
+    <div style="font-size:28px;color:var(--amber);opacity:.5;margin-bottom:8px"><i class="fas fa-cloud-upload-alt"></i></div>
     <h3>Drop daily CSV or click to upload</h3>
-    <p>Date, Symbol, Sector, Index, Open, High, Low, Close — NANDI learns with every session</p>
+    <p style="margin-top:4px">Date · Symbol · Sector · Index · Open · High · Low · Close — 250 days recommended — NANDI learns with every session</p>
   </div>
   <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFileSelect(this)">
-
   <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
-  <div class="status-line" id="statusLine">Ready — load a CSV. NANDI will learn from accumulated signal history automatically.</div>
+  <div class="status-line" id="statusLine">Ready — load a CSV. 250 days of data gives the richest learning.</div>
 
   <!-- SELF-LEARNING PANEL -->
   <div id="slPanel" style="display:none" class="sl-panel">
-    <div class="sl-panel-title"><span class="mem-dot"></span>M6 — Self-Learning Engine · Adaptive Weight Matrix</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="sl-title"><span class="mem-dot"></span>M6 · Adaptive Weight Matrix — recalibrates every session</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">
       <div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:6px">SIGNAL TYPE WEIGHTS — learned from your ledger (vs prior fixed weights)</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:6px">SIGNAL WEIGHTS — prior vs learned (Bayesian blend)</div>
         <div class="weight-grid" id="weightGrid"></div>
       </div>
       <div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:6px">CONTEXT-CONDITIONAL WIN RATES — signal × regime × breadth × HVP</div>
-        <div id="contextWinRates" style="overflow-y:auto;max-height:220px"></div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:6px">CONTEXT WIN RATES — signal × regime × breadth × HVP</div>
+        <div id="ctxWR" style="overflow-y:auto;max-height:200px"></div>
       </div>
     </div>
     <div style="font-family:var(--mono);font-size:9px;color:var(--text3);border-top:1px solid var(--border);padding-top:6px" id="slMeta"></div>
   </div>
 
-  <!-- REGIME STRIP -->
+  <!-- REGIME -->
   <div id="regimeStrip" style="display:none">
     <div class="card">
-      <div class="card-title">Market Regime — Major Indices</div>
+      <div class="card-title">Market Regime — Major Indices (live from data)</div>
       <div class="regime-row" id="regimeRow"></div>
     </div>
   </div>
@@ -250,7 +362,7 @@ tr.row-s2{background:linear-gradient(90deg,rgba(255,77,109,.04) 0%,transparent 1
   <!-- INSIGHTS -->
   <div id="insightsSection" style="display:none">
     <div class="card">
-      <div class="card-title">NANDI Intelligence — Synthesised insights across all modules</div>
+      <div class="card-title">NANDI Intelligence — synthesised insights across all modules</div>
       <div id="insightsBody"></div>
     </div>
   </div>
@@ -259,35 +371,37 @@ tr.row-s2{background:linear-gradient(90deg,rgba(255,77,109,.04) 0%,transparent 1
   <div id="mainTabs" style="display:none">
     <div class="tabs">
       <div class="tab active" onclick="switchTab('signals')">Signals</div>
-      <div class="tab" onclick="switchTab('ledger')">Memory Ledger</div>
-      <div class="tab" onclick="switchTab('anomalies')">Anomalies M1</div>
-      <div class="tab" onclick="switchTab('cascade')">Sector Cascade M4</div>
-      <div class="tab" onclick="switchTab('interdep')">Interdependence M2</div>
-      <div class="tab" onclick="switchTab('sectors')">Sector Breadth</div>
-      <div class="tab" onclick="switchTab('correlation')">Correlation</div>
+      <div class="tab" onclick="switchTab('ledger')">Ledger</div>
+      <div class="tab" onclick="switchTab('retcorr')">Return Correlation</div>
+      <div class="tab" onclick="switchTab('tpsl')">Adaptive TP/SL</div>
+      <div class="tab" onclick="switchTab('multibagger')">Multibagger</div>
+      <div class="tab" onclick="switchTab('anomalies')">Anomalies</div>
+      <div class="tab" onclick="switchTab('cascade')">Cascade M4</div>
+      <div class="tab" onclick="switchTab('interdep')">Interdependence</div>
+      <div class="tab" onclick="switchTab('sectors')">Sectors</div>
     </div>
 
-    <!-- SIGNALS -->
+    <!-- SIGNALS TAB -->
     <div class="tab-panel active" id="tab-signals">
       <div class="filter-row">
-        <select id="fSector" onchange="renderSignalsTable()"><option value="all">All Sectors</option></select>
-        <select id="fSignal" onchange="renderSignalsTable()">
+        <select id="fSector" onchange="renderSigTable()"><option value="all">All Sectors</option></select>
+        <select id="fSignal" onchange="renderSigTable()">
           <option value="all">All Signals</option>
           <option>B1-OS</option><option>B1-MOM</option><option>B2</option><option>B3</option>
           <option>S1-OB</option><option>S1-MOM</option><option>S2</option><option>S3</option>
         </select>
-        <select id="fRegime" onchange="renderSignalsTable()">
+        <select id="fRegime" onchange="renderSigTable()">
           <option value="all">All Regimes</option><option value="bull">Bull</option>
           <option value="bear">Bear</option><option value="flat">Flat</option>
         </select>
-        <select id="fScoreMin" onchange="renderSignalsTable()">
-          <option value="0">Score: All</option><option value="50">Score ≥50</option>
-          <option value="60">Score ≥60</option><option value="70">Score ≥70</option>
+        <select id="fScoreMin" onchange="renderSigTable()">
+          <option value="0">All Scores</option><option value="50">≥50</option>
+          <option value="60">≥60</option><option value="70">≥70</option>
         </select>
-        <button class="btn btn-gold" onclick="exportLedger()">Export Ledger</button>
-        <button class="btn btn-dim" onclick="clearMemory()">Clear Memory</button>
+        <button class="btn btn-amber" onclick="exportLedger()"><i class="fas fa-download"></i> Export</button>
+        <button class="btn btn-dim" onclick="clearMemory()"><i class="fas fa-trash"></i> Clear Memory</button>
         <span style="font-family:var(--mono);font-size:9px;color:var(--text2)">
-          <strong id="fShowing" style="color:var(--bright)">0</strong> / <strong id="fTotal" style="color:var(--bright)">0</strong>
+          <b id="fShowing" style="color:var(--bright)">0</b> / <b id="fTotal" style="color:var(--bright)">0</b>
         </span>
       </div>
       <div class="tbl-wrap"><table id="sigTable">
@@ -295,46 +409,126 @@ tr.row-s2{background:linear-gradient(90deg,rgba(255,77,109,.04) 0%,transparent 1
           <th onclick="sortSig('symbol')">Symbol</th>
           <th onclick="sortSig('sector')">Sector</th>
           <th onclick="sortSig('signal')">Signal</th>
-          <th onclick="sortSig('score')">Score↓</th>
-          <th onclick="sortSig('learned_wr')">LearnedWR</th>
-          <th onclick="sortSig('entry_date')">Date</th>
+          <th onclick="sortSig('score')">Score</th>
+          <th onclick="sortSig('learned_wr')">Lrn WR</th>
+          <th onclick="sortSig('ret_250d')">250d Ret</th>
           <th onclick="sortSig('entry_price')">CMP</th>
-          <th>TP / SL</th>
+          <th>Learned TP/SL</th>
           <th onclick="sortSig('rr')">R:R</th>
           <th onclick="sortSig('hvp')">HVP</th>
+          <th onclick="sortSig('avg_ret_before_exit')">AvgBefExit</th>
           <th onclick="sortSig('regime')">Regime</th>
-          <th onclick="sortSig('sector_breadth')">SecBrdth</th>
-          <th onclick="sortSig('zscore_price')">Z-Price</th>
-          <th onclick="sortSig('nsei_corr')">NSEICorr</th>
-          <th>Cascade?</th>
+          <th onclick="sortSig('sector_breadth')">Brdth</th>
+          <th onclick="sortSig('nsei_corr')">NSEIr</th>
+          <th onclick="sortSig('mb_score')">MB Score</th>
+          <th>Cascade</th>
         </tr></thead>
         <tbody id="sigBody"></tbody>
       </table></div>
     </div>
 
-    <!-- LEDGER -->
+    <!-- LEDGER TAB -->
     <div class="tab-panel" id="tab-ledger">
-      <div class="card" style="margin-bottom:8px">
-        <div class="card-title">Accumulated Signal Memory — All Sessions</div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">Accumulated Signal Memory</div>
         <div id="ledgerStats" class="stat-grid" style="margin-bottom:10px"></div>
-        <div id="ledgerBySignal" style="margin-bottom:8px"></div>
+        <div id="ledgerBySig"></div>
       </div>
       <div class="tbl-wrap"><table>
         <thead><tr>
-          <th>Symbol</th><th>Sector</th><th>Signal</th><th>Score</th><th>LearnedWR</th>
-          <th>Entry Date</th><th>Entry ₹</th><th>TP</th><th>SL</th>
-          <th>Outcome</th><th>P&L%</th><th>Bars</th><th>Regime</th><th>SecBrdth</th><th>HVP</th>
+          <th>Symbol</th><th>Sector</th><th>Signal</th><th>Score</th><th>Lrn WR</th>
+          <th>Entry</th><th>Entry ₹</th><th>TP</th><th>SL</th>
+          <th>Outcome</th><th>P&L%</th><th>Bars</th><th>Regime</th><th>Brdth</th><th>HVP</th>
         </tr></thead>
         <tbody id="ledgerBody"></tbody>
       </table></div>
     </div>
 
-    <!-- ANOMALIES M1 -->
+    <!-- RETURN CORRELATION TAB -->
+    <div class="tab-panel" id="tab-retcorr">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title bull">250-Day Return ↔ Signal Correlation</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:10px">
+          Which signals are generated most by high-performing stocks? Correlation between 250d return and signal type frequency per stock.
+        </div>
+        <div id="retCorrSignals"></div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title bull">Sector Return Distribution (250 days)</div>
+        <div id="sectorRetDist"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Stock Return vs HVP Correlation</div>
+        <div id="retHVPCorr"></div>
+      </div>
+    </div>
+
+    <!-- ADAPTIVE TP/SL TAB -->
+    <div class="tab-panel" id="tab-tpsl">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title purple">M6 · Stock-Wise Adaptive TP/SL — learned from actual exit bars</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:10px">
+          For each stock, NANDI learns: average gain before HLE/LE exit fires (avg return before exit signal), 
+          and sets adaptive TP = avg gain × 0.85, adaptive SL = avg loss × 1.1. Needs ≥3 resolved trades per stock.
+        </div>
+        <div class="filter-row">
+          <select id="tpslSector" onchange="renderTPSL()"><option value="all">All Sectors</option></select>
+          <select id="tpslFilter" onchange="renderTPSL()">
+            <option value="all">All</option><option value="learned">Learned only</option><option value="prior">Prior only</option>
+          </select>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr>
+            <th onclick="sortTPSL('symbol')">Symbol</th>
+            <th>Sector</th>
+            <th onclick="sortTPSL('n')">Trades (n)</th>
+            <th onclick="sortTPSL('avg_win_ret')">Avg Win %</th>
+            <th onclick="sortTPSL('avg_loss_ret')">Avg Loss %</th>
+            <th onclick="sortTPSL('avg_ret_before_exit')">Avg Ret Before Exit</th>
+            <th onclick="sortTPSL('avg_bars')">Avg Bars</th>
+            <th>TP Method</th>
+            <th onclick="sortTPSL('learned_tp_mult')">Lrn TP Mult</th>
+            <th onclick="sortTPSL('learned_sl_mult')">Lrn SL Mult</th>
+            <th onclick="sortTPSL('win_rate')">Win Rate</th>
+          </tr></thead>
+          <tbody id="tpslBody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- MULTIBAGGER TAB -->
+    <div class="tab-panel" id="tab-multibagger">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title amber">Multibagger Engine — structural momentum + trend quality scoring</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:10px">
+          Score = 40% (250d return) + 30% (trend consistency — % of 20-bar windows trending up) + 
+          20% (drawdown resilience) + 10% (range expansion). Stocks scoring ≥60 warrant portfolio attention.
+        </div>
+        <div class="filter-row">
+          <select id="mbSector" onchange="renderMB()"><option value="all">All Sectors</option></select>
+          <select id="mbIndex" onchange="renderMB()">
+            <option value="all">All Indices</option>
+            <option value="NIFTY 50">NIFTY 50</option>
+            <option value="NIFTY NEXT 50">NIFTY NEXT 50</option>
+            <option value="NIFTY MIDCAP 150">NIFTY MIDCAP 150</option>
+            <option value="NIFTY SMALLCAP 250">NIFTY SMALLCAP 250</option>
+          </select>
+          <select id="mbMinScore" onchange="renderMB()">
+            <option value="0">All Scores</option><option value="50">MB Score ≥50</option>
+            <option value="60">MB Score ≥60</option><option value="70">MB Score ≥70</option>
+          </select>
+        </div>
+        <div id="mbInsights" style="margin-bottom:10px"></div>
+        <div class="mb-grid" id="mbGrid"></div>
+      </div>
+    </div>
+
+    <!-- ANOMALIES TAB -->
     <div class="tab-panel" id="tab-anomalies">
-      <div class="card" style="margin-bottom:8px">
-        <div class="card-title">M1 — Statistical Anomaly Detection</div>
+      <div class="card">
+        <div class="card-title bear">M1 · Statistical Anomaly Detection</div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:8px">
-          Z-score > 2.0 = significant anomaly. Opportunity mapping: compression → expansion setup, divergence → reversal candidate, extreme → caution.
+          Z-score > 2σ = significant anomaly. Vol compression → watch for expansion. Price extreme → reversal candidate.
         </div>
         <div class="filter-row">
           <select id="anomSector" onchange="renderAnomalies()"><option value="all">All Sectors</option></select>
@@ -343,65 +537,50 @@ tr.row-s2{background:linear-gradient(90deg,rgba(255,77,109,.04) 0%,transparent 1
             <option value="vol_compression">Vol Compression</option>
             <option value="vol_expansion">Vol Expansion</option>
             <option value="price_extreme">Price Extreme</option>
-            <option value="score_divergence">Score Divergence</option>
-            <option value="breadth_anomaly">Breadth Anomaly</option>
+            <option value="score_divergence">Score Surge/Collapse</option>
           </select>
         </div>
-        <div class="anomaly-grid" id="anomalyGrid"></div>
+        <div class="anom-grid" id="anomalyGrid"></div>
       </div>
     </div>
 
-    <!-- CASCADE M4 -->
+    <!-- CASCADE TAB -->
     <div class="tab-panel" id="tab-cascade">
-      <div class="card" style="margin-bottom:8px">
-        <div class="card-title">M4 — Intra-Sector Signal Cascade</div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title bull">M4 · Intra-Sector Signal Cascade</div>
         <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:8px">
-          Within each sector: which stocks trigger first (leaders) and which follow (followers). Historical lag in bars from memory. Use this to pre-position in followers when leaders signal.
+          Historical leaders fire first within sector. Followers signal within 1-7 days. Pre-position in followers when leaders signal.
         </div>
         <div id="cascadeContainer"></div>
       </div>
       <div class="card">
-        <div class="card-title">Today's Cascade Opportunities — Leaders already signalled</div>
+        <div class="card-title">Today's Cascade Opportunities</div>
         <div id="cascadeOpps"></div>
       </div>
     </div>
 
-    <!-- INTERDEPENDENCE M2 -->
+    <!-- INTERDEPENDENCE TAB -->
     <div class="tab-panel" id="tab-interdep">
-      <div class="card" style="margin-bottom:8px">
-        <div class="card-title">M2 — Sector Interdependence Matrix</div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:8px">
-          Pair correlation between sector indices. Highly coupled (>0.7): avoid holding conflicting signals simultaneously. Uncorrelated (<0.2): genuine diversification value. Negative: natural hedge.
-        </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">M2 · Sector Interdependence Matrix</div>
         <div id="interdepInsights" style="margin-bottom:8px"></div>
-        <div class="dep-matrix" id="depMatrix"></div>
+        <div style="overflow-x:auto" id="depMatrix"></div>
       </div>
       <div class="card">
-        <div class="card-title">Diversification Score — Current open signals</div>
+        <div class="card-title">Portfolio Diversification Score</div>
         <div id="divScore"></div>
       </div>
     </div>
 
-    <!-- SECTOR BREADTH -->
+    <!-- SECTORS TAB -->
     <div class="tab-panel" id="tab-sectors">
-      <div class="card" style="margin-bottom:8px">
+      <div class="card" style="margin-bottom:10px">
         <div class="card-title">Sector Breadth — % bull signals today</div>
         <div class="sector-grid" id="sectorGrid"></div>
       </div>
       <div class="card">
-        <div class="card-title">Sector Win Rate — from memory ledger</div>
+        <div class="card-title">Sector Win Rate from Memory Ledger</div>
         <div class="sector-grid" id="sectorWinGrid"></div>
-      </div>
-    </div>
-
-    <!-- CORRELATION -->
-    <div class="tab-panel" id="tab-correlation">
-      <div class="card" style="margin-bottom:8px">
-        <div class="card-title">Stock↔Index Correlation (100-day log returns)</div>
-        <div class="filter-row">
-          <select id="corrSector" onchange="renderCorrTable()"><option value="all">All Sectors</option></select>
-        </div>
-        <div id="corrTableWrap" class="tbl-wrap"></div>
       </div>
     </div>
 
@@ -411,447 +590,272 @@ tr.row-s2{background:linear-gradient(90deg,rgba(255,77,109,.04) 0%,transparent 1
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════════
-// NANDI v2 — Self-Learning Signal Intelligence Engine
-// M6: Adaptive weight matrix · M1: Anomaly detection
-// M4: Intra-sector cascade · M2: Interdependence
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// NANDI v3 — Self-Learning Signal Intelligence
+// M6: Adaptive weights + stock-wise TP/SL + return-before-exit
+// M1: Anomaly detection | M2: Interdependence | M4: Cascade
+// Multibagger engine | Return-trigger correlation
+// Fonts: IBM Plex Mono + Sans | Dual light/dark theme
+// ═══════════════════════════════════════════════════════════════
 
-const LEDGER_KEY   = 'nandi_v2_ledger';
-const WEIGHTS_KEY  = 'nandi_v2_weights';
-const CASCADE_KEY  = 'nandi_v2_cascade';
-const META_KEY     = 'nandi_v2_meta';
-const SCHEMA_VER   = 2;
+const LEDGER_KEY  = 'nandi_v3_ledger';
+const WEIGHTS_KEY = 'nandi_v3_weights';
+const TPSL_KEY    = 'nandi_v3_tpsl';
+const META_KEY    = 'nandi_v3_meta';
+const SCHEMA_VER  = 3;
 
-// ── Fixed prior weights (what v1 used, hardcoded) ────────────
-const PRIOR_WEIGHTS = {
-  'B1-OS':28,'B1-MOM':22,'B2':30,'B3':12,
-  'S1-OB':28,'S1-MOM':22,'S2':30,'S3':12
-};
+const PRIOR_WEIGHTS = {'B1-OS':28,'B1-MOM':22,'B2':30,'B3':12,'S1-OB':28,'S1-MOM':22,'S2':30,'S3':12};
+const HMA_FAST=9,HMA_SLOW=10,SMI_K=10,SMI_D=3,SMI_SM=3,SMI_BULL=40,SMI_BEAR=-40,ATR_LEN=14,MIN_BARS=30;
+const ATR_TP_DEF=1.8,ATR_SL_DEF=1.0,TP_PCT=0.02,SL_PCT=0.04;
+const IDX_SECTOR={'CNXAUTO':'Automobile and Auto Components','CNXFMCG':'Fast Moving Consumer Goods',
+  'CNXMETAL':'Metals & Mining','CNXPHARMA':'Healthcare','NIFTY_FIN_SERVICE':'Financial Services',
+  'NSEBANK':'Financial Services','CRSLDX':'Market Index','NSEI':'Market Index'};
 
-// ── Signal params ────────────────────────────────────────────
-const HMA_FAST=9,HMA_SLOW=10,SMI_K=10,SMI_D=3,SMI_SM=3;
-const SMI_BULL=40,SMI_BEAR=-40,ATR_LEN=14,MIN_BARS=25;
-const TP_FIXED=0.02,SL_FIXED=0.04,ATR_TP=1.8,ATR_SL=1.0;
-
-const IDX_SECTOR_MAP={
-  'CNXAUTO':'Automobile and Auto Components',
-  'CNXFMCG':'Fast Moving Consumer Goods',
-  'CNXMETAL':'Metals & Mining',
-  'CNXPHARMA':'Healthcare',
-  'NIFTY_FIN_SERVICE':'Financial Services',
-  'NSEBANK':'Financial Services',
-  'CNXPSUBANK':'Financial Services',
-  'CRSLDX':'Market Index','NSEI':'Market Index'
-};
-
-// ── Global state ─────────────────────────────────────────────
-let allSignals=[], allStockData={}, regimeData={};
-let sectorBreadth={}, corrData={}, sectorCorrMatrix={};
-let anomalyData=[], cascadeData={}, cascadeFromLedger={};
-let adaptiveWeights={}, contextWinRateMap={};
-let sortCol='score', sortDir=-1;
+// ── Global state ──────────────────────────────────────────────
+let allSignals=[],allStockData={},regimeData={};
+let sectorBreadth={},corrData={},sectorCorrMatrix={};
+let anomalyData=[],cascadeData={},cascadeFromLedger={};
+let adaptiveWeights={},contextWRMap={};
+let stockTPSL={},stockReturns={};  // NEW: per-stock adaptive TP/SL and returns
+let mbData=[];  // multibagger scores
+let sortCol='score',sortDir=-1;
+let sortColTPSL='n',sortDirTPSL=-1;
 let sessionCount=0;
+
+// ═══════════════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════════════
+function toggleTheme(){
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem('nandi_theme',document.body.classList.contains('dark-mode')?'dark':'light');
+}
+function initTheme(){
+  const t=localStorage.getItem('nandi_theme');
+  if(t==='dark')document.body.classList.add('dark-mode');
+}
 
 // ═══════════════════════════════════════════════════════════════
 // M6 — SELF-LEARNING ENGINE
 // ═══════════════════════════════════════════════════════════════
 
-function buildContextKey(sig, regime, breadthBucket, hvpBucket) {
-  // breadthBucket: lo(<40), mid(40-60), hi(>60)
-  // hvpBucket: lo(<30), mid(30-60), hi(>60)
-  return `${sig}|${regime}|${breadthBucket}|${hvpBucket}`;
-}
+function buildContextKey(sig,regime,bBkt,hBkt){return sig+'|'+regime+'|'+bBkt+'|'+hBkt}
+function getBucket(v,lo,hi){return v<lo?'lo':v>hi?'hi':'mid'}
 
-function getBucket(val, lo, hi) {
-  return val < lo ? 'lo' : val > hi ? 'hi' : 'mid';
-}
-
-function recalibrateWeights() {
-  // Load full ledger — only use resolved records
-  const ledger = loadLedger();
-  const resolved = ledger.filter(r => r.status === 'win' || r.status === 'loss');
-  if (resolved.length < 5) return; // not enough data yet
-
-  // 1. Per-signal win rates → new base weights
-  const sigStats = {};
-  for (const sig of Object.keys(PRIOR_WEIGHTS)) sigStats[sig] = { wins:0, total:0, pnls:[] };
-
-  for (const r of resolved) {
-    const sig = r.signal;
-    if (!sigStats[sig]) continue;
-    sigStats[sig].total++;
-    if (r.status === 'win') sigStats[sig].wins++;
-    if (r.pnl_pct !== null) sigStats[sig].pnls.push(r.pnl_pct);
+function recalibrateWeights(){
+  const ledger=loadLedger();
+  const resolved=ledger.filter(r=>r.status==='win'||r.status==='loss');
+  if(resolved.length<5)return;
+  const sigStats={};
+  for(const sig of Object.keys(PRIOR_WEIGHTS))sigStats[sig]={wins:0,total:0,pnls:[]};
+  for(const r of resolved){
+    if(!sigStats[r.signal])continue;
+    sigStats[r.signal].total++;
+    if(r.status==='win')sigStats[r.signal].wins++;
+    if(r.pnl_pct!==null)sigStats[r.signal].pnls.push(r.pnl_pct);
   }
+  const PS=10,PWR=0.55,newW={};
+  for(const[sig,prior] of Object.entries(PRIOR_WEIGHTS)){
+    const st=sigStats[sig];
+    if(!st||st.total===0){newW[sig]={base:prior,wr:null,n:0,avgPnl:null,delta:0};continue}
+    const obsWR=st.wins/st.total,postWR=(PS*PWR+st.total*obsWR)/(PS+st.total);
+    const newBase=Math.round(prior+(postWR-PWR)*100*0.6);
+    const avgPnl=st.pnls.length?parseFloat((st.pnls.reduce((a,b)=>a+b,0)/st.pnls.length).toFixed(2)):null;
+    newW[sig]={base:Math.max(5,Math.min(50,newBase)),wr:parseFloat((obsWR*100).toFixed(1)),n:st.total,avgPnl,delta:newBase-prior};
+  }
+  const ctxMap={};
+  for(const r of resolved){
+    if(!r.signal||r.signal==='WAIT')continue;
+    const key=buildContextKey(r.signal,r.regime||'flat',getBucket(r.sector_breadth||50,40,60),getBucket(r.hvp||50,30,60));
+    if(!ctxMap[key])ctxMap[key]={wins:0,total:0};
+    ctxMap[key].total++;if(r.status==='win')ctxMap[key].wins++;
+  }
+  for(const[k,v] of Object.entries(ctxMap)){if(v.total<3){delete ctxMap[k];continue}ctxMap[k].wr=parseFloat((v.wins/v.total*100).toFixed(1))}
+  localStorage.setItem(WEIGHTS_KEY,JSON.stringify({weights:newW,ctx:ctxMap,updatedAt:new Date().toISOString()}));
+  adaptiveWeights=newW;contextWRMap=ctxMap;
+}
 
-  // Bayesian blend: posterior = (prior_n * prior_wr + observed_n * observed_wr) / (prior_n + observed_n)
-  // Prior strength = 10 (equivalent to 10 pseudo-observations at 55% win rate)
-  const PRIOR_STRENGTH = 10, PRIOR_WR = 0.55;
-  const newWeights = {};
-  for (const [sig, prior] of Object.entries(PRIOR_WEIGHTS)) {
-    const stats = sigStats[sig];
-    if (!stats || stats.total === 0) { newWeights[sig] = { base: prior, wr: null, n: 0, avgPnl: null, delta: 0 }; continue; }
-    const obsWR = stats.wins / stats.total;
-    const postWR = (PRIOR_STRENGTH * PRIOR_WR + stats.total * obsWR) / (PRIOR_STRENGTH + stats.total);
-    // Scale: 55% WR → original prior. Each % above/below 55 adds/subtracts 0.6 pts
-    const newBase = Math.round(prior + (postWR - PRIOR_WR) * 100 * 0.6);
-    const avgPnl = stats.pnls.length ? parseFloat((stats.pnls.reduce((a,b)=>a+b,0)/stats.pnls.length).toFixed(2)) : null;
-    newWeights[sig] = {
-      base: Math.max(5, Math.min(50, newBase)),
-      wr: parseFloat((obsWR * 100).toFixed(1)),
-      n: stats.total,
-      avgPnl,
-      delta: newBase - prior
+// ── Stock-wise adaptive TP/SL ─────────────────────────────────
+function buildStockTPSL(){
+  const ledger=loadLedger();
+  const resolved=ledger.filter(r=>r.status==='win'||r.status==='loss');
+  const byStock={};
+  for(const r of resolved){
+    const sym=r.symbol;if(!sym)continue;
+    if(!byStock[sym])byStock[sym]={wins:[],losses:[],retBeforeExit:[],bars:[],atr:[]};
+    if(r.status==='win'&&r.pnl_pct!==null)byStock[sym].wins.push(r.pnl_pct);
+    if(r.status==='loss'&&r.pnl_pct!==null)byStock[sym].losses.push(r.pnl_pct);
+    if(r.pnl_pct!==null)byStock[sym].retBeforeExit.push(r.pnl_pct);
+    if(r.bars_to_exit!==null)byStock[sym].bars.push(r.bars_to_exit);
+    if(r.atr&&r.entry_price)byStock[sym].atr.push(r.atr/r.entry_price*100);
+  }
+  stockTPSL={};
+  for(const[sym,data] of Object.entries(byStock)){
+    const n=data.wins.length+data.losses.length;
+    if(n<1)continue;
+    const avgWin=data.wins.length?data.wins.reduce((a,b)=>a+b,0)/data.wins.length:null;
+    const avgLoss=data.losses.length?Math.abs(data.losses.reduce((a,b)=>a+b,0)/data.losses.length):null;
+    const avgRet=data.retBeforeExit.reduce((a,b)=>a+b,0)/data.retBeforeExit.length;
+    const avgBars=data.bars.length?data.bars.reduce((a,b)=>a+b,0)/data.bars.length:null;
+    const avgAtrPct=data.atr.length?data.atr.reduce((a,b)=>a+b,0)/data.atr.length:null;
+    // Learned TP multiplier: if avg win = 3% and avg ATR% = 1.5%, TP mult = 2.0
+    const learnedTPMult=avgWin&&avgAtrPct&&avgAtrPct>0?parseFloat((avgWin/avgAtrPct*0.85).toFixed(2)):null;
+    const learnedSLMult=avgLoss&&avgAtrPct&&avgAtrPct>0?parseFloat((avgLoss/avgAtrPct*1.1).toFixed(2)):null;
+    const wr=n>0?parseFloat((data.wins.length/n*100).toFixed(1)):null;
+    stockTPSL[sym]={
+      n,avg_win_ret:avgWin?parseFloat(avgWin.toFixed(2)):null,
+      avg_loss_ret:avgLoss?parseFloat((-avgLoss).toFixed(2)):null,
+      avg_ret_before_exit:parseFloat(avgRet.toFixed(2)),
+      avg_bars:avgBars?parseFloat(avgBars.toFixed(1)):null,
+      learned_tp_mult:learnedTPMult,learned_sl_mult:learnedSLMult,
+      win_rate:wr,is_learned:n>=3
     };
   }
-
-  // 2. Context-conditional win rates (signal × regime × breadth × hvp)
-  const ctxMap = {};
-  for (const r of resolved) {
-    const sig = r.signal;
-    if (!sig || sig === 'WAIT') continue;
-    const bBkt = getBucket(r.sector_breadth || 50, 40, 60);
-    const hBkt = getBucket(r.hvp || 50, 30, 60);
-    const key  = buildContextKey(sig, r.regime || 'flat', bBkt, hBkt);
-    if (!ctxMap[key]) ctxMap[key] = { wins:0, total:0 };
-    ctxMap[key].total++;
-    if (r.status === 'win') ctxMap[key].wins++;
-  }
-  // Only keep keys with ≥3 observations
-  for (const [k, v] of Object.entries(ctxMap)) {
-    if (v.total < 3) { delete ctxMap[k]; continue; }
-    ctxMap[k].wr = parseFloat((v.wins / v.total * 100).toFixed(1));
-  }
-
-  // Save
-  localStorage.setItem(WEIGHTS_KEY, JSON.stringify({ weights: newWeights, ctx: ctxMap, updatedAt: new Date().toISOString() }));
-  adaptiveWeights    = newWeights;
-  contextWinRateMap  = ctxMap;
+  localStorage.setItem(TPSL_KEY,JSON.stringify(stockTPSL));
 }
 
-function loadWeights() {
-  try {
-    const raw = localStorage.getItem(WEIGHTS_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    adaptiveWeights   = parsed.weights || {};
-    contextWinRateMap = parsed.ctx     || {};
-  } catch {}
+function getLearnedTPSL(sym,cmp,atr){
+  const st=stockTPSL[sym];
+  if(!st||!st.is_learned||!st.learned_tp_mult)return null;
+  const tp=parseFloat((cmp+atr*st.learned_tp_mult).toFixed(2));
+  const sl=parseFloat((cmp-atr*(st.learned_sl_mult||ATR_SL_DEF)).toFixed(2));
+  return{tp,sl,mult_tp:st.learned_tp_mult,mult_sl:st.learned_sl_mult,source:'learned'};
 }
 
-function adaptiveSignalScore(sig, regime, sectorBreadthPct, hvp, rr, weeklyTrend) {
-  // Use learned base weight if available, else prior
-  const learned = adaptiveWeights[sig];
-  const base    = learned ? learned.base : (PRIOR_WEIGHTS[sig] || 0);
-  let score     = base;
+function loadWeights(){try{const r=localStorage.getItem(WEIGHTS_KEY);if(!r)return;const p=JSON.parse(r);adaptiveWeights=p.weights||{};contextWRMap=p.ctx||{}}catch{}}
+function loadStockTPSL(){try{const r=localStorage.getItem(TPSL_KEY);if(r)stockTPSL=JSON.parse(r)}catch{}}
 
-  // Trend alignment
-  if (sig.startsWith('B') && weeklyTrend === 'bull') score += 14;
-  else if (sig.startsWith('S') && weeklyTrend === 'bear') score += 14;
-  else score += 4;
-
-  // R:R bonus
-  if (rr >= 2.5) score += 9;
-  else if (rr >= 1.5) score += 5;
-  else if (rr >= 1.0) score += 2;
-
-  // HVP bonus
-  if (hvp > 60) score += 8;
-  else if (hvp > 40) score += 4;
-
-  // Context-conditional lookup: if we have learned this exact context, boost/penalise
-  const bBkt = getBucket(sectorBreadthPct, 40, 60);
-  const hBkt = getBucket(hvp, 30, 60);
-  const ctxKey = buildContextKey(sig, regime, bBkt, hBkt);
-  const ctx    = contextWinRateMap[ctxKey];
-  if (ctx && ctx.n >= 3) {
-    // If context WR > 60% → +8, 50-60% → +3, 40-50% → -3, <40% → -8
-    const cBonus = ctx.wr >= 60 ? 8 : ctx.wr >= 50 ? 3 : ctx.wr >= 40 ? -3 : -8;
-    score += cBonus;
-  }
-
-  return Math.min(100, Math.max(0, Math.round(score)));
+function adaptiveScore(sig,regime,breadthPct,hvp,rr,weeklyTrend){
+  const learned=adaptiveWeights[sig];
+  const base=learned?learned.base:(PRIOR_WEIGHTS[sig]||0);
+  let score=base;
+  if(sig.startsWith('B')&&weeklyTrend==='bull')score+=14;
+  else if(sig.startsWith('S')&&weeklyTrend==='bear')score+=14;
+  else score+=4;
+  if(rr>=2.5)score+=9;else if(rr>=1.5)score+=5;else if(rr>=1)score+=2;
+  if(hvp>60)score+=8;else if(hvp>40)score+=4;
+  const ctx=contextWRMap[buildContextKey(sig,regime,getBucket(breadthPct,40,60),getBucket(hvp,30,60))];
+  if(ctx&&ctx.n>=3)score+=(ctx.wr>=60?8:ctx.wr>=50?3:ctx.wr>=40?-3:-8);
+  return Math.min(100,Math.max(0,Math.round(score)));
 }
 
-function getLearntWR(sig, regime, breadthPct, hvp) {
-  const bBkt  = getBucket(breadthPct || 50, 40, 60);
-  const hBkt  = getBucket(hvp || 50, 30, 60);
-  const ctxKey= buildContextKey(sig, regime || 'flat', bBkt, hBkt);
-  const ctx   = contextWinRateMap[ctxKey];
-  if (ctx && ctx.n >= 3) return ctx.wr;
-  const sig_learned = adaptiveWeights[sig];
-  return sig_learned && sig_learned.wr !== null ? sig_learned.wr : null;
+function getLearnedWR(sig,regime,breadthPct,hvp){
+  const key=buildContextKey(sig,regime||'flat',getBucket(breadthPct||50,40,60),getBucket(hvp||50,30,60));
+  const ctx=contextWRMap[key];
+  if(ctx&&ctx.n>=3)return ctx.wr;
+  const lw=adaptiveWeights[sig];
+  return lw&&lw.wr!==null?lw.wr:null;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// M1 — STATISTICAL ANOMALY DETECTION
+// MULTIBAGGER ENGINE
 // ═══════════════════════════════════════════════════════════════
 
-function detectAnomalies(bySymbol, stockSyms) {
-  anomalyData = [];
-
-  for (const sym of stockSyms) {
-    const info   = bySymbol[sym];
-    const rows   = info.rows;
-    if (rows.length < 30) continue;
-
-    const closes = rows.map(r => r.cl);
-    const n      = closes.length - 1;
-
-    // Rolling 20-bar z-score on close
-    const mean20 = closes.slice(n-19,n+1).reduce((a,b)=>a+b,0)/20;
-    const std20  = Math.sqrt(closes.slice(n-19,n+1).reduce((a,b)=>a+(b-mean20)**2,0)/20);
-    const zPrice = std20 > 0 ? parseFloat(((closes[n] - mean20) / std20).toFixed(2)) : 0;
-
-    // HV z-score (vol compression / expansion)
-    const hvs    = calcHV(closes);
-    const hvValid= hvs.filter(v=>v!==null);
-    const hvN    = hvs[n];
-    let zHV = 0;
-    if (hvN !== null && hvValid.length >= 20) {
-      const hvMean = hvValid.slice(-20).reduce((a,b)=>a+b,0)/20;
-      const hvStd  = Math.sqrt(hvValid.slice(-20).reduce((a,b)=>a+(b-hvMean)**2,0)/20);
-      zHV = hvStd > 0 ? parseFloat(((hvN - hvMean) / hvStd).toFixed(2)) : 0;
-    }
-
-    // Score vs expected (uses current signal score vs rolling avg score from ledger)
-    const ledger    = loadLedger();
-    const symLedger = ledger.filter(r => r.symbol === sym && r.score !== undefined);
-    let zScore = 0;
-    if (symLedger.length >= 5) {
-      const scores = symLedger.map(r => r.score);
-      const sMean  = scores.reduce((a,b)=>a+b,0) / scores.length;
-      const sStd   = Math.sqrt(scores.reduce((a,b)=>a+(b-sMean)**2,0)/scores.length);
-      const curSig = allSignals.find(s => s.symbol === sym);
-      if (curSig && sStd > 0) zScore = parseFloat(((curSig.score - sMean) / sStd).toFixed(2));
-    }
-
-    // Tag anomaly types and opportunity
-    const anomalies = [];
-
-    if (zHV <= -2.0) {
-      anomalies.push({
-        type: 'vol_compression',
-        label: 'Vol Compression',
-        z: zHV,
-        severity: Math.abs(zHV) >= 3 ? 'high' : 'medium',
-        opportunity: 'Compression precedes expansion. Watch for B2/B1-OS entry if HMA turns.',
-        color: 'var(--teal)'
-      });
-    }
-    if (zHV >= 2.0) {
-      anomalies.push({
-        type: 'vol_expansion',
-        label: 'Vol Expansion',
-        z: zHV,
-        severity: Math.abs(zHV) >= 3 ? 'high' : 'medium',
-        opportunity: 'Vol spike — possible news/event. Avoid new entries; wait for consolidation.',
-        color: 'var(--warn)'
-      });
-    }
-    if (Math.abs(zPrice) >= 2.5) {
-      anomalies.push({
-        type: 'price_extreme',
-        label: zPrice > 0 ? 'Price Extreme High' : 'Price Extreme Low',
-        z: zPrice,
-        severity: Math.abs(zPrice) >= 3.5 ? 'high' : 'medium',
-        opportunity: zPrice > 0 ? 'Overbought extreme — watch for S1-OB reversal signal.' : 'Oversold extreme — watch for B1-OS entry on next HMA turn.',
-        color: zPrice > 0 ? 'var(--bear)' : 'var(--bull)'
-      });
-    }
-    if (Math.abs(zScore) >= 2.0) {
-      anomalies.push({
-        type: 'score_divergence',
-        label: zScore > 0 ? 'Score Surge' : 'Score Collapse',
-        z: zScore,
-        severity: 'medium',
-        opportunity: zScore > 0 ? 'Signal score unusually high vs historical. Strong setup — size normally.' : 'Score lower than typical for this stock. Reduce size or wait.',
-        color: zScore > 0 ? 'var(--bull)' : 'var(--bear)'
-      });
-    }
-
-    if (anomalies.length > 0) {
-      anomalyData.push({ sym, sector: info.sector, anomalies, zPrice, zHV, zScore });
-    }
+function computeMultibagger(bySymbol,stockSyms){
+  mbData=[];
+  for(const sym of stockSyms){
+    const info=bySymbol[sym],rows=info.rows;
+    if(rows.length<150)continue;
+    const closes=rows.map(r=>r.cl),highs=rows.map(r=>r.hi),lows=rows.map(r=>r.lo);
+    const n=closes.length-1;
+    const ret250=(closes[n]-closes[0])/closes[0]*100;
+    let upW=0,totW=0;
+    for(let i=20;i<closes.length;i+=10){if(closes[i]>closes[i-20])upW++;totW++}
+    const trendConsistency=totW>0?upW/totW*100:50;
+    const logR=[];for(let i=1;i<closes.length;i++)logR.push(Math.log(closes[i]/closes[i-1]));
+    const hv=Math.sqrt(logR.reduce((s,x)=>s+x*x,0)/logR.length*252)*100;
+    let peak=closes[0],maxDD=0;
+    for(const c of closes){peak=Math.max(peak,c);maxDD=Math.min(maxDD,(c-peak)/peak*100)}
+    const ranges=highs.map((h,i)=>h-lows[i]);
+    const rangeExp=ranges.slice(-20).reduce((a,b)=>a+b,0)/20/
+      (ranges.slice(0,20).reduce((a,b)=>a+b,0)/20||1)*100-100;
+    // Trend accel: is last 50d ret > first 50d ret (momentum building)
+    const ret50late=(closes[n]-closes[Math.max(0,n-50)])/closes[Math.max(0,n-50)]*100;
+    const ret50early=(closes[Math.min(50,n)]-closes[0])/closes[0]*100;
+    const momentumBuild=ret50late>ret50early;
+    const mbScore=Math.round(
+      Math.min(ret250/300,1)*40+
+      trendConsistency/100*30+
+      Math.max(0,1-Math.abs(maxDD)/50)*20+
+      Math.min(Math.max(rangeExp,-50),100)/100*10
+    );
+    mbData.push({
+      sym,sector:info.sector,index:info.index,
+      ret_250:parseFloat(ret250.toFixed(2)),
+      trend_consistency:parseFloat(trendConsistency.toFixed(1)),
+      hv:parseFloat(hv.toFixed(1)),
+      max_dd:parseFloat(maxDD.toFixed(2)),
+      range_expansion:parseFloat(rangeExp.toFixed(1)),
+      momentum_build:momentumBuild,
+      mb_score:mbScore,
+      last_close:closes[n]
+    });
   }
-
-  // Sort by max severity
-  anomalyData.sort((a,b) => {
-    const aMax = Math.max(...a.anomalies.map(x => Math.abs(x.z)));
-    const bMax = Math.max(...b.anomalies.map(x => Math.abs(x.z)));
-    return bMax - aMax;
-  });
+  mbData.sort((a,b)=>b.mb_score-a.mb_score);
 }
 
 // ═══════════════════════════════════════════════════════════════
-// M4 — INTRA-SECTOR CASCADE
+// RETURN–TRIGGER CORRELATION
 // ═══════════════════════════════════════════════════════════════
 
-function buildCascadeFromLedger() {
-  const ledger = loadLedger();
-  const resolved = ledger.filter(r => r.status === 'win' || r.status === 'loss');
-  cascadeFromLedger = {};
-
-  // Group by sector
-  const bySector = {};
-  for (const r of resolved) {
-    if (!r.sector || !r.signal || !r.entry_date) continue;
-    if (!bySector[r.sector]) bySector[r.sector] = [];
-    bySector[r.sector].push(r);
-  }
-
-  for (const [sector, records] of Object.entries(bySector)) {
-    // For each stock pair, find how often B fires first in one and within 5 bars in the other
-    const bySymbol = {};
-    for (const r of records) {
-      if (!bySymbol[r.symbol]) bySymbol[r.symbol] = [];
-      bySymbol[r.symbol].push(r);
-    }
-    const syms = Object.keys(bySymbol);
-    if (syms.length < 2) continue;
-
-    const pairLags = {}; // symA → { symB: [lags] }
-    for (const symA of syms) {
-      for (const symB of syms) {
-        if (symA === symB) continue;
-        const recA = bySymbol[symA].filter(r => r.signal && r.signal.startsWith('B'));
-        const recB = bySymbol[symB].filter(r => r.signal && r.signal.startsWith('B'));
-        const lags = [];
-        for (const a of recA) {
-          const aDate = new Date(a.entry_date);
-          for (const b of recB) {
-            const bDate = new Date(b.entry_date);
-            const diffDays = (bDate - aDate) / 86400000;
-            if (diffDays > 0 && diffDays <= 7) lags.push(diffDays);
-          }
-        }
-        if (lags.length >= 2) {
-          if (!pairLags[symA]) pairLags[symA] = {};
-          pairLags[symA][symB] = {
-            avgLag: parseFloat((lags.reduce((a,b)=>a+b,0)/lags.length).toFixed(1)),
-            n: lags.length
-          };
-        }
-      }
-    }
-
-    // Rank leaders: symA that appears as a leader most often
-    const leaderScore = {};
-    for (const [symA, followers] of Object.entries(pairLags)) {
-      leaderScore[symA] = Object.values(followers).reduce((s,v) => s + v.n, 0);
-    }
-
-    if (Object.keys(leaderScore).length > 0) {
-      cascadeFromLedger[sector] = { pairLags, leaderScore, syms };
-    }
-  }
-}
-
-function buildCurrentCascade(bySymbol, stockSyms) {
-  // Current session: find which stocks fired bull signals today per sector
-  const sectorToSignals = {};
-  for (const rec of allSignals) {
-    if (rec.signal === 'WAIT') continue;
-    const sec = rec.sector;
-    if (!sectorToSignals[sec]) sectorToSignals[sec] = [];
-    sectorToSignals[sec].push(rec);
-  }
-
-  cascadeData = {};
-  for (const [sector, signals] of Object.entries(sectorToSignals)) {
-    const bullSignals = signals.filter(s => s.signal.startsWith('B'))
-      .sort((a,b) => b.score - a.score);
-    const bearSignals = signals.filter(s => s.signal.startsWith('S'))
-      .sort((a,b) => b.score - a.score);
-
-    if (bullSignals.length < 2 && bearSignals.length < 2) continue;
-
-    // Merge with ledger cascade knowledge
-    const ledgerCascade = cascadeFromLedger[sector];
-    const enriched = { sector, bull: [], bear: [], leaders: [], followers: [] };
-
-    // Assign leader/follower from ledger knowledge
-    if (ledgerCascade && ledgerCascade.leaderScore) {
-      const sorted = Object.entries(ledgerCascade.leaderScore).sort((a,b) => b[1]-a[1]);
-      enriched.leaders   = sorted.slice(0, 3).map(([s]) => s);
-      enriched.followers = sorted.slice(3).map(([s]) => s);
-    }
-
-    // Build ranked cascade
-    for (const sig of bullSignals) {
-      const isLeader   = enriched.leaders.includes(sig.symbol);
-      const isFollower = enriched.followers.includes(sig.symbol);
-      const followData = (ledgerCascade && ledgerCascade.pairLags && ledgerCascade.pairLags[sig.symbol]) || {};
-      enriched.bull.push({
-        ...sig,
-        role: isLeader ? 'leader' : isFollower ? 'follower' : 'new',
-        followsFrom: followData
-      });
-    }
-    for (const sig of bearSignals) {
-      enriched.bear.push({ ...sig, role: 'new', followsFrom: {} });
-    }
-
-    cascadeData[sector] = enriched;
+function computeReturnCorrelation(bySymbol,stockSyms){
+  stockReturns={};
+  for(const sym of stockSyms){
+    const rows=bySymbol[sym].rows;
+    if(rows.length<100)continue;
+    const closes=rows.map(r=>r.cl),n=closes.length-1;
+    stockReturns[sym]={
+      ret_250:(closes[n]-closes[0])/closes[0]*100,
+      ret_100:(closes[n]-closes[Math.max(0,n-100)])/closes[Math.max(0,n-100)]*100,
+      ret_50:(closes[n]-closes[Math.max(0,n-50)])/closes[Math.max(0,n-50)]*100
+    };
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MATH HELPERS (same as v1)
+// MATH HELPERS (ES5-compatible — no optional chaining)
 // ═══════════════════════════════════════════════════════════════
 
 function wma(arr,i,p){let n=0,d=0;for(let k=0;k<p;k++){const w=p-k;n+=arr[i-k]*w;d+=w}return d>0?n/d:arr[i]}
-
-function calcHMA(prices, period) {
-  const n=prices.length, half=Math.floor(period/2), sq=Math.floor(Math.sqrt(period));
+function calcHMA(prices,period){
+  const n=prices.length,half=Math.floor(period/2),sq=Math.floor(Math.sqrt(period));
   const res=new Array(n).fill(null);
   for(let i=period-1;i<n;i++){
-    const wf=wma(prices,i,period), wh=wma(prices,i,half), diff=2*wh-wf;
-    const difArr=[...res.slice(Math.max(0,i-sq+1),i).filter(x=>x!==null),diff];
-    res[i]=difArr.length>=sq?wma(difArr,difArr.length-1,sq):diff;
+    const wf=wma(prices,i,period),wh=wma(prices,i,half),diff=2*wh-wf;
+    const buf=[];for(let j=Math.max(0,i-sq+1);j<=i;j++)if(res[j]!==null||j===i)buf.push(j<i?res[j]:diff);
+    const da=buf.length>0?buf:[diff];
+    res[i]=da.length>=sq?wma(da,da.length-1,Math.min(sq,da.length)):diff;
   }
   return res;
 }
-
-function calcSMI(highs,lows,closes,kLen=10,d=3,sm=3){
-  const n=closes.length, raw=new Array(n).fill(null);
+function calcSMI(highs,lows,closes,kLen,d,sm){
+  const n=closes.length,raw=new Array(n).fill(null);
   for(let i=kLen-1;i<n;i++){
     let hh=highs[i],ll=lows[i];
     for(let j=1;j<kLen;j++){hh=Math.max(hh,highs[i-j]);ll=Math.min(ll,lows[i-j])}
-    const hl=hh-ll||1;
-    raw[i]=((closes[i]-(hh+ll)/2)/(hl/2))*100;
+    raw[i]=((closes[i]-(hh+ll)/2)/((hh-ll||1)/2))*100;
   }
   function ema(arr,len){
-    const r=new Array(arr.length).fill(null);
-    let f=-1;for(let i=0;i<arr.length;i++)if(arr[i]!==null){f=i;break}
-    if(f<0)return r; r[f]=arr[f];
-    const k=2/(len+1);
+    const r=new Array(arr.length).fill(null);let f=-1;
+    for(let i=0;i<arr.length;i++)if(arr[i]!==null){f=i;break}
+    if(f<0)return r;r[f]=arr[f];const k=2/(len+1);
     for(let i=f+1;i<arr.length;i++)if(arr[i]!==null)r[i]=arr[i]*k+r[i-1]*(1-k);
     return r;
   }
-  const e1=ema(raw,d),e2=ema(e1,d),ss=ema(e2,sm);
-  return{smi:e2,sig:ss};
+  return{smi:ema(ema(raw,d),d),sig:ema(ema(raw,d),sm)};
 }
-
-function calcATR(highs,lows,closes,p=14){
+function calcATR(highs,lows,closes,p){
   const n=closes.length,trs=new Array(n).fill(null),atrs=new Array(n).fill(null);
   for(let i=1;i<n;i++)trs[i]=Math.max(highs[i]-lows[i],Math.abs(highs[i]-closes[i-1]),Math.abs(lows[i]-closes[i-1]));
-  let sum=0;for(let i=1;i<=Math.min(p,n-1);i++)sum+=trs[i];
+  let sum=0;for(let i=1;i<=Math.min(p,n-1);i++)sum+=trs[i]||0;
   if(n>p)atrs[p]=sum/p;
   for(let i=p+1;i<n;i++)if(atrs[i-1]!==null&&trs[i]!==null)atrs[i]=(atrs[i-1]*(p-1)+trs[i])/p;
   return atrs;
 }
-
-function calcHV(closes,p=20){
-  const n=closes.length,hvs=new Array(n).fill(null);
-  for(let i=p;i<n;i++){
-    let s=0;for(let j=1;j<=p;j++){const lr=Math.log(closes[i-j+1]/closes[i-j]);s+=lr*lr}
-    hvs[i]=Math.sqrt(s/p*252)*100;
-  }
+function calcHV(closes,p){
+  p=p||20;const n=closes.length,hvs=new Array(n).fill(null);
+  for(let i=p;i<n;i++){let s=0;for(let j=1;j<=p;j++){const lr=Math.log(closes[i-j+1]/closes[i-j]);s+=lr*lr}hvs[i]=Math.sqrt(s/p*252)*100}
   return hvs;
 }
-
 function pearsonCorr(a,b){
   const n=a.length;if(n<5)return null;
   let sx=0,sy=0,sxy=0,sx2=0,sy2=0;
@@ -859,7 +863,6 @@ function pearsonCorr(a,b){
   const num=n*sxy-sx*sy,den=Math.sqrt((n*sx2-sx*sx)*(n*sy2-sy*sy));
   return den<1e-10?0:parseFloat((num/den).toFixed(3));
 }
-
 function detectSignal(h9,h10,smi,n){
   if(n<2||!h9[n]||!h10[n])return'WAIT';
   const h9d=h9[n]-h9[n-1],h9dp=h9[n-1]-h9[n-2],sv=smi[n]||0;
@@ -874,41 +877,106 @@ function detectSignal(h9,h10,smi,n){
   if(sOB&&h9[n]<h9[n-1]&&h10[n]<h10[n-1])return'S3';
   return'WAIT';
 }
-
-function resolveOutcome(rows,entryIdx,tp,sl){
-  let outcome='open',exitPrice=null,exitDate=null,barsToExit=null;
-  for(let i=entryIdx+1;i<rows.length;i++){
+function resolveOutcome(rows,idx,tp,sl){
+  let outcome='open',exitPrice=null,exitDate=null,bars=null;
+  for(let i=idx+1;i<rows.length;i++){
     const h=rows[i].hi,l=rows[i].lo;
-    const hitTP=tp>rows[entryIdx].cl?h>=tp:l<=tp;
-    const hitSL=tp>rows[entryIdx].cl?l<=sl:h>=sl;
-    if(hitTP&&hitSL){outcome='loss';exitPrice=sl}
-    else if(hitTP){outcome='win';exitPrice=tp}
-    else if(hitSL){outcome='loss';exitPrice=sl}
-    if(outcome!=='open'){exitDate=rows[i].date;barsToExit=i-entryIdx;break}
+    const htTP=tp>rows[idx].cl?h>=tp:l<=tp,htSL=tp>rows[idx].cl?l<=sl:h>=sl;
+    if(htTP&&htSL){outcome='loss';exitPrice=sl}
+    else if(htTP){outcome='win';exitPrice=tp}
+    else if(htSL){outcome='loss';exitPrice=sl}
+    if(outcome!=='open'){exitDate=rows[i].date;bars=i-idx;break}
   }
-  const pnl=exitPrice!==null?parseFloat(((exitPrice-rows[entryIdx].cl)/rows[entryIdx].cl*100).toFixed(2)):null;
-  return{outcome,exitPrice,exitDate,pnl_pct:pnl,barsToExit};
+  const pnl=exitPrice!==null?parseFloat(((exitPrice-rows[idx].cl)/rows[idx].cl*100).toFixed(2)):null;
+  return{outcome,exitPrice,exitDate,pnl_pct:pnl,barsToExit:bars};
+}
+function parseCSV(text){
+  const lines=text.trim().split(/\r?\n/);if(lines.length<2)return{};
+  const hdrs=lines[0].split(',').map(h=>h.trim().toLowerCase());
+  const ci=h=>hdrs.indexOf(h);const byS={};
+  for(let i=1;i<lines.length;i++){
+    const p=lines[i].split(',');if(p.length<7)continue;
+    const date=(p[ci('date')]||'').trim(),sym=(p[ci('symbol')]||'').trim().toUpperCase();
+    const sector=(p[ci('sector')]||'').trim()||'N/A',index=(p[ci('index')]||'').trim()||'N/A';
+    const op=parseFloat(p[ci('open')]),hi=parseFloat(p[ci('high')]);
+    const lo=parseFloat(p[ci('low')]),cl=parseFloat(p[ci('close')]);
+    if(!sym||!date||isNaN(cl))continue;
+    if(!byS[sym])byS[sym]={sector,index,rows:[]};
+    byS[sym].rows.push({date,op,hi,lo,cl});
+  }
+  for(const sym of Object.keys(byS))byS[sym].rows.sort((a,b)=>a.date.localeCompare(b.date));
+  return byS;
 }
 
-function parseCSV(text){
-  const lines=text.trim().split(/\r?\n/);
-  if(lines.length<2)return{};
-  const headers=lines[0].split(',').map(h=>h.trim().toLowerCase());
-  const ci=h=>headers.indexOf(h);
-  const bySymbol={};
-  for(let i=1;i<lines.length;i++){
-    const parts=lines[i].split(',');
-    if(parts.length<7)continue;
-    const date=(parts[ci('date')] || '').trim(),sym=(parts[ci('symbol')] || '').trim().toUpperCase();
-    const sector=(parts[ci('sector')] || '').trim() || 'N/A',index=(parts[ci('index')] || '').trim() || 'N/A';
-    const op=parseFloat(parts[ci('open')]),hi=parseFloat(parts[ci('high')]);
-    const lo=parseFloat(parts[ci('low')]),cl=parseFloat(parts[ci('close')]);
-    if(!sym||!date||isNaN(cl))continue;
-    if(!bySymbol[sym])bySymbol[sym]={sector,index,rows:[]};
-    bySymbol[sym].rows.push({date,op,hi,lo,cl});
+// ═══════════════════════════════════════════════════════════════
+// ANOMALY DETECTION M1
+// ═══════════════════════════════════════════════════════════════
+function detectAnomalies(bySymbol,stockSyms){
+  anomalyData=[];
+  for(const sym of stockSyms){
+    const rows=bySymbol[sym].rows;if(rows.length<30)continue;
+    const closes=rows.map(r=>r.cl),n=closes.length-1;
+    const sl=closes.slice(Math.max(0,n-19),n+1);
+    const mean20=sl.reduce((a,b)=>a+b,0)/sl.length;
+    const std20=Math.sqrt(sl.reduce((a,b)=>a+(b-mean20)**2,0)/sl.length);
+    const zPrice=std20>0?parseFloat(((closes[n]-mean20)/std20).toFixed(2)):0;
+    const hvs=calcHV(closes,20),hvValid=hvs.filter(v=>v!==null),hvN=hvs[n];
+    let zHV=0;
+    if(hvN!==null&&hvValid.length>=20){
+      const hvLast=hvValid.slice(-20),hvMean=hvLast.reduce((a,b)=>a+b,0)/20;
+      const hvStd=Math.sqrt(hvLast.reduce((a,b)=>a+(b-hvMean)**2,0)/20);
+      zHV=hvStd>0?parseFloat(((hvN-hvMean)/hvStd).toFixed(2)):0;
+    }
+    const anoms=[];
+    if(zHV<=-2)anoms.push({type:'vol_compression',label:'Vol Compression',z:zHV,severity:Math.abs(zHV)>=3?'high':'medium',opportunity:'Compression precedes expansion. Watch for B2/B1-OS on HMA turn.'});
+    if(zHV>=2)anoms.push({type:'vol_expansion',label:'Vol Expansion',z:zHV,severity:Math.abs(zHV)>=3?'high':'medium',opportunity:'Vol spike — possible news event. Avoid new entries; wait for consolidation.'});
+    if(Math.abs(zPrice)>=2.5)anoms.push({type:'price_extreme',label:zPrice>0?'Price Extreme High':'Price Extreme Low',z:zPrice,severity:Math.abs(zPrice)>=3.5?'high':'medium',opportunity:zPrice>0?'Overbought extreme — watch for S1-OB reversal.':'Oversold extreme — watch for B1-OS on next HMA turn.'});
+    if(anoms.length)anomalyData.push({sym,sector:bySymbol[sym].sector,anoms,zPrice,zHV});
   }
-  for(const sym of Object.keys(bySymbol))bySymbol[sym].rows.sort((a,b)=>a.date.localeCompare(b.date));
-  return bySymbol;
+  anomalyData.sort((a,b)=>Math.max(...b.anoms.map(x=>Math.abs(x.z)))-Math.max(...a.anoms.map(x=>Math.abs(x.z))));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CASCADE M4
+// ═══════════════════════════════════════════════════════════════
+function buildCascadeFromLedger(){
+  const ledger=loadLedger(),resolved=ledger.filter(r=>r.status==='win'||r.status==='loss');
+  cascadeFromLedger={};
+  const bySector={};
+  for(const r of resolved){if(!r.sector||!r.signal||!r.entry_date)continue;if(!bySector[r.sector])bySector[r.sector]=[];bySector[r.sector].push(r)}
+  for(const[sector,records] of Object.entries(bySector)){
+    const bySym={};
+    for(const r of records){if(!bySym[r.symbol])bySym[r.symbol]=[];bySym[r.symbol].push(r)}
+    const syms=Object.keys(bySym);if(syms.length<2)continue;
+    const pairLags={};
+    for(const symA of syms)for(const symB of syms){
+      if(symA===symB)continue;
+      const recA=bySym[symA].filter(r=>r.signal&&r.signal.startsWith('B'));
+      const recB=bySym[symB].filter(r=>r.signal&&r.signal.startsWith('B'));
+      const lags=[];
+      for(const a of recA)for(const b of recB){const d=(new Date(b.entry_date)-new Date(a.entry_date))/86400000;if(d>0&&d<=7)lags.push(d)}
+      if(lags.length>=2){if(!pairLags[symA])pairLags[symA]={};pairLags[symA][symB]={avgLag:parseFloat((lags.reduce((a,b)=>a+b,0)/lags.length).toFixed(1)),n:lags.length}}
+    }
+    const leaderScore={};
+    for(const[symA,followers] of Object.entries(pairLags))leaderScore[symA]=Object.values(followers).reduce((s,v)=>s+v.n,0);
+    if(Object.keys(leaderScore).length>0)cascadeFromLedger[sector]={pairLags,leaderScore,syms};
+  }
+}
+
+function buildCurrentCascade(){
+  const sectorToSignals={};
+  for(const rec of allSignals){if(rec.signal==='WAIT')continue;const sec=rec.sector;if(!sectorToSignals[sec])sectorToSignals[sec]=[];sectorToSignals[sec].push(rec)}
+  cascadeData={};
+  for(const[sector,signals] of Object.entries(sectorToSignals)){
+    const bullSigs=signals.filter(s=>s.signal&&s.signal.startsWith('B')).sort((a,b)=>b.score-a.score);
+    const bearSigs=signals.filter(s=>s.signal&&s.signal.startsWith('S')).sort((a,b)=>b.score-a.score);
+    if(bullSigs.length<2&&bearSigs.length<2)continue;
+    const lk=cascadeFromLedger[sector];
+    const leaders=lk&&lk.leaderScore?Object.entries(lk.leaderScore).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([s])=>s):[];
+    const followers=lk&&lk.leaderScore?Object.entries(lk.leaderScore).sort((a,b)=>b[1]-a[1]).slice(3).map(([s])=>s):[];
+    const bull=bullSigs.map(s=>({...s,role:leaders.includes(s.symbol)?'leader':followers.includes(s.symbol)?'follower':'new',followsFrom:(lk&&lk.pairLags&&lk.pairLags[s.symbol])||{}}));
+    cascadeData[sector]={sector,bull,bear:bearSigs,leaders,followers};
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -917,24 +985,19 @@ function parseCSV(text){
 
 async function processAll(bySymbol){
   const symbols=Object.keys(bySymbol);
-  allStockData=bySymbol; allSignals=[];
-
-  // Load & recalibrate weights FIRST
-  setProgress(3,'M6: Recalibrating adaptive weights from memory ledger...');
-  loadWeights();
-  recalibrateWeights();
+  allStockData=bySymbol;allSignals=[];
+  setProgress(3,'M6: Recalibrating adaptive weights...');
+  loadWeights();loadStockTPSL();recalibrateWeights();buildStockTPSL();
   await sleep(0);
 
-  // Regime
-  setProgress(8,'Computing market regime...');
+  setProgress(8,'Computing market regime from major indices...');
   const majorSyms=symbols.filter(s=>bySymbol[s].index==='MAJOR INDEX');
   regimeData={};
   for(const ms of majorSyms){
     const rows=bySymbol[ms].rows,closes=rows.map(r=>r.cl);
-    const hvs=calcHV(closes),hvLast=hvs[hvs.length-1]||15;
+    const hvs=calcHV(closes,20),hvLast=hvs[hvs.length-1]||15;
     const hvArr=hvs.filter(v=>v!==null);
-    const hvMax=hvArr.length?Math.max(...hvArr):hvLast*1.5;
-    const hvMin=hvArr.length?Math.min(...hvArr):hvLast*0.5;
+    const hvMax=hvArr.length?Math.max.apply(null,hvArr):hvLast*1.5,hvMin=hvArr.length?Math.min.apply(null,hvArr):hvLast*0.5;
     const hvp=hvMax>hvMin?Math.round((hvLast-hvMin)/(hvMax-hvMin)*100):50;
     const h9=calcHMA(closes,HMA_FAST),h10=calcHMA(closes,HMA_SLOW),n=closes.length-1;
     const trend=h9[n]>h10[n]?'bull':h9[n]<h10[n]?'bear':'flat';
@@ -944,48 +1007,53 @@ async function processAll(bySymbol){
   const mktRegime=nsei?nsei.trend:'flat';
   await sleep(0);
 
-  // Correlations
-  setProgress(14,'Computing stock↔index correlations...');
-  const idxCloseMap={};
-  for(const ms of majorSyms){const rows=bySymbol[ms].rows;idxCloseMap[ms]={};for(const r of rows)idxCloseMap[ms][r.date]=r.cl}
-  corrData={};
+  setProgress(13,'Computing return-trigger correlations...');
   const stockSyms=symbols.filter(s=>bySymbol[s].index!=='MAJOR INDEX');
+  computeReturnCorrelation(bySymbol,stockSyms);
+  await sleep(0);
+
+  setProgress(18,'Computing stock↔index correlations...');
+  const idxMap={};
+  for(const ms of majorSyms){idxMap[ms]={};for(const r of bySymbol[ms].rows)idxMap[ms][r.date]=r.cl}
+  corrData={};
   for(const sym of stockSyms){
     const rows=bySymbol[sym].rows;corrData[sym]={};
     for(const ms of majorSyms){
-      const idxMap=idxCloseMap[ms];
-      const paired=rows.filter(r=>idxMap[r.date]!==undefined);
+      const paired=rows.filter(r=>idxMap[ms]&&idxMap[ms][r.date]!==undefined);
       if(paired.length<10){corrData[sym][ms]=null;continue}
-      const sRet=[],iRet=[];
-      for(let i=1;i<paired.length;i++){sRet.push(Math.log(paired[i].cl/paired[i-1].cl));iRet.push(Math.log(idxMap[paired[i].date]/idxMap[paired[i-1].date]))}
-      corrData[sym][ms]=pearsonCorr(sRet,iRet);
+      const sR=[],iR=[];
+      for(let i=1;i<paired.length;i++){sR.push(Math.log(paired[i].cl/paired[i-1].cl));iR.push(Math.log(idxMap[ms][paired[i].date]/idxMap[ms][paired[i-1].date]))}
+      corrData[sym][ms]=pearsonCorr(sR,iR);
     }
   }
   await sleep(0);
 
-  // Sector-sector corr
-  setProgress(25,'Sector↔sector correlation matrix...');
+  setProgress(26,'Sector↔sector correlation matrix...');
   sectorCorrMatrix={};
   for(const ma of majorSyms){
     sectorCorrMatrix[ma]={};
     for(const mb of majorSyms){
       if(ma===mb){sectorCorrMatrix[ma][mb]=1.0;continue}
-      const rowsA=bySymbol[ma].rows;const dateB={};for(const r of bySymbol[mb].rows)dateB[r.date]=r.cl;
+      const rowsA=bySymbol[ma].rows,dateB={};
+      for(const r of bySymbol[mb].rows)dateB[r.date]=r.cl;
       const paired=rowsA.filter(r=>dateB[r.date]!==undefined);
       if(paired.length<10){sectorCorrMatrix[ma][mb]=null;continue}
       const aR=[],bR=[];
       for(let i=1;i<paired.length;i++){
-        const prevA=rowsA[rowsA.findIndex(r=>r.date===paired[i-1].date)];
-        const prevB=bySymbol[mb].rows.find(r=>r.date===paired[i-1].date);
-        if(prevA&&prevB){aR.push(Math.log(paired[i].cl/prevA.cl));bR.push(Math.log(dateB[paired[i].date]/prevB.cl))}
+        const pa=rowsA[rowsA.findIndex(r=>r.date===paired[i-1].date)];
+        const pb=bySymbol[mb].rows.find(r=>r.date===paired[i-1].date);
+        if(pa&&pb){aR.push(Math.log(paired[i].cl/pa.cl));bR.push(Math.log(dateB[paired[i].date]/pb.cl))}
       }
       sectorCorrMatrix[ma][mb]=aR.length>=5?pearsonCorr(aR,bR):null;
     }
   }
   await sleep(0);
 
-  // Signal detection with ADAPTIVE scoring
-  setProgress(38,'Running adaptive SALT signal engine...');
+  setProgress(36,'Multibagger scoring (250-day structural analysis)...');
+  computeMultibagger(bySymbol,stockSyms);
+  await sleep(0);
+
+  setProgress(44,'Running adaptive SALT signal engine on all symbols...');
   const secBullCnt={},secTotalCnt={},mktBull={bull:0,total:0};
   let processed=0;
   for(const sym of stockSyms){
@@ -993,68 +1061,69 @@ async function processAll(bySymbol){
     if(rows.length<MIN_BARS){processed++;continue}
     const closes=rows.map(r=>r.cl),highs=rows.map(r=>r.hi),lows=rows.map(r=>r.lo),n=rows.length-1;
     const h9=calcHMA(closes,HMA_FAST),h10=calcHMA(closes,HMA_SLOW);
-    const{smi,sig:smiSig}=calcSMI(highs,lows,closes,SMI_K,SMI_D,SMI_SM);
-    const atrs=calcATR(highs,lows,closes,ATR_LEN),hvs=calcHV(closes);
+    const smires=calcSMI(highs,lows,closes,SMI_K,SMI_D,SMI_SM);
+    const smi=smires.smi;
+    const atrs=calcATR(highs,lows,closes,ATR_LEN),hvs=calcHV(closes,20);
     const signal=detectSignal(h9,h10,smi,n);
     const cmp=closes[n],atr=atrs[n]||cmp*0.015,hvLast=hvs[n]||15;
     const hvArr=hvs.filter(v=>v!==null);
-    const hvMax=hvArr.length?Math.max(...hvArr):hvLast*1.5,hvMin=hvArr.length?Math.min(...hvArr):hvLast*0.5;
+    const hvMax=hvArr.length?Math.max.apply(null,hvArr):hvLast*1.5,hvMin=hvArr.length?Math.min.apply(null,hvArr):hvLast*0.5;
     const hvp=hvMax>hvMin?Math.round((hvLast-hvMin)/(hvMax-hvMin)*100):50;
     const wSlope=n>=5?(closes[n]-closes[n-5])/closes[n-5]:0;
     const weeklyTrend=wSlope>0.005?'bull':wSlope<-0.005?'bear':'flat';
 
-    let tp,sl;
-    if(atr&&atr>0&&atr<cmp*0.1){
-      if(signal.startsWith('B')){tp=parseFloat((cmp+atr*ATR_TP).toFixed(2));sl=parseFloat((cmp-atr*ATR_SL).toFixed(2))}
-      else if(signal.startsWith('S')){tp=parseFloat((cmp-atr*ATR_TP).toFixed(2));sl=parseFloat((cmp+atr*ATR_SL).toFixed(2))}
-      else{tp=parseFloat((cmp*(1+TP_FIXED)).toFixed(2));sl=parseFloat((cmp*(1-SL_FIXED)).toFixed(2))}
+    // Learned TP/SL first, fallback ATR, fallback fixed
+    let tp,sl,tpSlSource='prior';
+    const learned=getLearnedTPSL(sym,cmp,atr);
+    if(learned){tp=learned.tp;sl=learned.sl;tpSlSource='learned'}
+    else if(atr&&atr>0&&atr<cmp*0.1){
+      if(signal.startsWith('B')){tp=parseFloat((cmp+atr*ATR_TP_DEF).toFixed(2));sl=parseFloat((cmp-atr*ATR_SL_DEF).toFixed(2))}
+      else if(signal.startsWith('S')){tp=parseFloat((cmp-atr*ATR_TP_DEF).toFixed(2));sl=parseFloat((cmp+atr*ATR_SL_DEF).toFixed(2))}
+      else{tp=parseFloat((cmp*(1+TP_PCT)).toFixed(2));sl=parseFloat((cmp*(1-SL_PCT)).toFixed(2))}
     } else {
-      if(signal.startsWith('B')){tp=parseFloat((cmp*(1+TP_FIXED)).toFixed(2));sl=parseFloat((cmp*(1-SL_FIXED)).toFixed(2))}
-      else if(signal.startsWith('S')){tp=parseFloat((cmp*(1-TP_FIXED)).toFixed(2));sl=parseFloat((cmp*(1+SL_FIXED)).toFixed(2))}
-      else{tp=parseFloat((cmp*(1+TP_FIXED)).toFixed(2));sl=parseFloat((cmp*(1-SL_FIXED)).toFixed(2))}
+      if(signal.startsWith('B')){tp=parseFloat((cmp*(1+TP_PCT)).toFixed(2));sl=parseFloat((cmp*(1-SL_PCT)).toFixed(2))}
+      else if(signal.startsWith('S')){tp=parseFloat((cmp*(1-TP_PCT)).toFixed(2));sl=parseFloat((cmp*(1+SL_PCT)).toFixed(2))}
+      else{tp=parseFloat((cmp*(1+TP_PCT)).toFixed(2));sl=parseFloat((cmp*(1-SL_PCT)).toFixed(2))}
     }
-    const rr=parseFloat((Math.abs(tp-cmp)/Math.abs(cmp-sl)).toFixed(2));
+    const rr=parseFloat((Math.abs(tp-cmp)/Math.max(Math.abs(cmp-sl),0.01)).toFixed(2));
 
     const sec=info.sector;
     if(!secBullCnt[sec]){secBullCnt[sec]=0;secTotalCnt[sec]=0}
     secTotalCnt[sec]++;
     const isBull=signal.startsWith('B')||(h9[n]>h10[n]&&(smi[n]||0)>0);
-    if(isBull)secBullCnt[sec]++;
-    mktBull.total++;if(isBull)mktBull.bull++;
-
+    if(isBull)secBullCnt[sec]++;mktBull.total++;if(isBull)mktBull.bull++;
     const secPct=secTotalCnt[sec]>0?Math.round(secBullCnt[sec]/secTotalCnt[sec]*100):0;
     const mktPct=mktBull.total>0?Math.round(mktBull.bull/mktBull.total*100):0;
-
-    // ADAPTIVE SCORE (uses learned weights + context WR)
-    const score=adaptiveSignalScore(signal,mktRegime,secPct,hvp,rr,weeklyTrend);
-    const learnedWR=getLearntWR(signal,mktRegime,secPct,hvp);
-
-    // Z-score for this stock
-    const mean20=closes.slice(Math.max(0,n-19),n+1).reduce((a,b)=>a+b,0)/Math.min(20,n+1);
-    const std20=Math.sqrt(closes.slice(Math.max(0,n-19),n+1).reduce((a,b)=>a+(b-mean20)**2,0)/Math.min(20,n+1));
-    const zScore=std20>0?parseFloat(((closes[n]-mean20)/std20).toFixed(2)):0;
-
-    const nseiCorr=corrData[sym] ? (corrData[sym]['NSEI'] !== undefined ? corrData[sym]['NSEI'] : null) : null;
+    const score=adaptiveScore(signal,mktRegime,secPct,hvp,rr,weeklyTrend);
+    const learnedWR=getLearnedWR(signal,mktRegime,secPct,hvp);
+    const nseiCorr=corrData[sym]&&corrData[sym]['NSEI']!==undefined?corrData[sym]['NSEI']:null;
+    const zSlice=closes.slice(Math.max(0,n-19),n+1);
+    const zMean=zSlice.reduce((a,b)=>a+b,0)/zSlice.length;
+    const zStd=Math.sqrt(zSlice.reduce((a,b)=>a+(b-zMean)**2,0)/zSlice.length);
+    const zPrice=zStd>0?parseFloat(((closes[n]-zMean)/zStd).toFixed(2)):0;
+    const ret250=stockReturns[sym]?parseFloat(stockReturns[sym].ret_250.toFixed(2)):null;
+    const mbRec=mbData.find(m=>m.sym===sym);
+    const avgRetBefExit=stockTPSL[sym]?stockTPSL[sym].avg_ret_before_exit:null;
 
     allSignals.push({
-      id:`${sym}_${signal}_${rows[n].date}`,symbol:sym,sector:sec,index_tier:info.index,
+      id:sym+'_'+signal+'_'+rows[n].date,symbol:sym,sector:sec,index_tier:info.index,
       signal,score,learned_wr:learnedWR,entry_date:rows[n].date,entry_price:cmp,
       atr:parseFloat(atr.toFixed(2)),tp,sl,rr,hvp,hv:parseFloat(hvLast.toFixed(1)),
-      regime:mktRegime,weekly_trend:weeklyTrend,sector_breadth:secPct,mkt_breadth:mktPct,
-      nsei_corr:nseiCorr,zscore_price:zScore,
+      tp_sl_source:tpSlSource,regime:mktRegime,weekly_trend:weeklyTrend,
+      sector_breadth:secPct,mkt_breadth:mktPct,nsei_corr:nseiCorr,
+      zscore_price:zPrice,ret_250d:ret250,mb_score:mbRec?mbRec.mb_score:null,
+      avg_ret_before_exit:avgRetBefExit,
       status:'open',exit_price:null,exit_date:null,pnl_pct:null,bars_to_exit:null,
       schema_ver:SCHEMA_VER
     });
     processed++;
-    if(processed%60===0){setProgress(38+Math.round(processed/stockSyms.length*30),`Adaptive scoring: ${processed}/${stockSyms.length}...`);await sleep(0)}
+    if(processed%70===0){setProgress(44+Math.round(processed/stockSyms.length*30),'Adaptive scoring: '+processed+'/'+stockSyms.length+'...');await sleep(0)}
   }
-
   sectorBreadth={};
   for(const sec of Object.keys(secTotalCnt))sectorBreadth[sec]={bull:secBullCnt[sec]||0,total:secTotalCnt[sec],pct:Math.round((secBullCnt[sec]||0)/secTotalCnt[sec]*100)};
   await sleep(0);
 
-  // Resolve outcomes
-  setProgress(72,'Resolving outcomes from memory...');
+  setProgress(76,'Resolving outcomes from memory ledger...');
   const ledger=loadLedger();
   for(const rec of ledger){
     if(rec.status!=='open')continue;
@@ -1062,46 +1131,31 @@ async function processAll(bySymbol){
     const rows=bySymbol[sym].rows;
     const idx=rows.findIndex(r=>r.date>=rec.entry_date);
     if(idx<0||idx>=rows.length-1)continue;
-    const{outcome,exitPrice,exitDate,pnl_pct,barsToExit}=resolveOutcome(rows,idx,rec.tp,rec.sl);
-    if(outcome!=='open'){rec.status=outcome;rec.exit_price=exitPrice;rec.exit_date=exitDate;rec.pnl_pct=pnl_pct;rec.bars_to_exit=barsToExit}
+    const res=resolveOutcome(rows,idx,rec.tp,rec.sl);
+    if(res.outcome!=='open'){rec.status=res.outcome;rec.exit_price=res.exitPrice;rec.exit_date=res.exitDate;rec.pnl_pct=res.pnl_pct;rec.bars_to_exit=res.barsToExit}
   }
-
-  // Add new signals
   const existingIds=new Set(ledger.map(r=>r.id));
   let newAdded=0;
-  for(const rec of allSignals){
-    if(rec.signal==='WAIT')continue;
-    if(!existingIds.has(rec.id)){ledger.push(rec);newAdded++}
-  }
+  for(const rec of allSignals){if(rec.signal==='WAIT')continue;if(!existingIds.has(rec.id)){ledger.push(rec);newAdded++}}
   saveLedger(ledger);
   await sleep(0);
 
-  // FINAL recalibrate with newly resolved outcomes
-  setProgress(80,'M6: Final weight recalibration with new outcomes...');
-  recalibrateWeights();
+  setProgress(84,'M6 final recalibration + stock TP/SL rebuild...');
+  recalibrateWeights();buildStockTPSL();
   await sleep(0);
 
-  // M1: Anomaly detection
-  setProgress(86,'M1: Statistical anomaly detection...');
+  setProgress(88,'M1: Anomaly detection...');
   detectAnomalies(bySymbol,stockSyms);
   await sleep(0);
 
-  // M4: Cascade from ledger + current session
-  setProgress(91,'M4: Building intra-sector cascade map...');
-  buildCascadeFromLedger();
-  buildCurrentCascade(bySymbol,stockSyms);
+  setProgress(92,'M4: Cascade map...');
+  buildCascadeFromLedger();buildCurrentCascade();
   await sleep(0);
 
-  // Update session count
-  const meta=loadMeta();
-  meta.sessions=(meta.sessions||0)+1;
-  meta.lastRun=new Date().toISOString();
-  saveMeta(meta);
+  const meta=loadMeta();meta.sessions=(meta.sessions||0)+1;meta.lastRun=new Date().toISOString();saveMeta(meta);
   sessionCount=meta.sessions;
-
-  setProgress(100,`Done — ${stockSyms.length} symbols | ${newAdded} new signals | ${anomalyData.length} anomalies | Session ${sessionCount}`);
-  toast(`Session ${sessionCount}: ${newAdded} signals stored, ${anomalyData.length} anomalies found. Weights recalibrated.`,'ok');
-
+  setProgress(100,'Done — '+stockSyms.length+' symbols | '+newAdded+' new signals | '+anomalyData.length+' anomalies | Session '+sessionCount);
+  toast('Session '+sessionCount+': '+newAdded+' signals stored. Weights recalibrated. '+Object.keys(stockTPSL).filter(k=>stockTPSL[k].is_learned).length+' stocks have learned TP/SL.','ok');
   renderAll();
 }
 
@@ -1115,528 +1169,435 @@ function saveLedger(d){try{localStorage.setItem(LEDGER_KEY,JSON.stringify(d))}ca
 function loadMeta(){try{const r=localStorage.getItem(META_KEY);return r?JSON.parse(r):{}}catch{return{}}}
 function saveMeta(d){try{localStorage.setItem(META_KEY,JSON.stringify(d))}catch{}}
 function clearMemory(){
-  if(!confirm('Clear all memory? Cannot be undone.'))return;
-  [LEDGER_KEY,WEIGHTS_KEY,CASCADE_KEY,META_KEY].forEach(k=>localStorage.removeItem(k));
-  adaptiveWeights={};contextWinRateMap={};sessionCount=0;
+  if(!confirm('Clear all NANDI memory? Cannot be undone.'))return;
+  [LEDGER_KEY,WEIGHTS_KEY,TPSL_KEY,META_KEY].forEach(k=>localStorage.removeItem(k));
+  adaptiveWeights={};contextWRMap={};stockTPSL={};sessionCount=0;
   toast('Memory cleared','info');updatePills();
 }
 function exportLedger(){
-  const data={ledger:loadLedger(),weights:adaptiveWeights,ctx:contextWinRateMap,meta:loadMeta()};
+  const data={ledger:loadLedger(),weights:adaptiveWeights,ctx:contextWRMap,tpsl:stockTPSL,meta:loadMeta()};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`nandi_v2_${new Date().toISOString().slice(0,10)}.json`;a.click();
-  toast('Full export done (ledger + weights)','ok');
+  a.download='nandi_v3_'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  toast('Full export done','ok');
 }
 
 // ═══════════════════════════════════════════════════════════════
-// RENDER
+// RENDER ALL
 // ═══════════════════════════════════════════════════════════════
-
 function renderAll(){
-  populateFilters();renderRegimeStrip();renderSLPanel();
-  renderStats();renderInsights();renderSignalsTable();
-  renderLedger();renderAnomalies();renderCascade();
-  renderInterdep();renderSectorBreadth();renderCorrTable();
+  populateFilters();renderRegime();renderSLPanel();renderStats();renderInsights();
+  renderSigTable();renderLedger();renderRetCorr();renderTPSL();renderMB();
+  renderAnomalies();renderCascade();renderInterdep();renderSectors();
   updatePills();
-  ['regimeStrip','summarySection','insightsSection','mainTabs','slPanel']
-    .forEach(id=>document.getElementById(id).style.display='block');
+  ['regimeStrip','summarySection','insightsSection','mainTabs','slPanel'].forEach(id=>{
+    document.getElementById(id).style.display='block';
+  });
 }
-
 function updatePills(){
   const ledger=loadLedger(),meta=loadMeta();
   const active=allSignals.filter(s=>s.signal!=='WAIT').length;
-  const stocks=Object.keys(allStockData).filter(s=>allStockData[s] && allStockData[s].index!=='MAJOR INDEX').length;
-  document.getElementById('pill-symbols').textContent=`${stocks} Symbols`;
-  document.getElementById('pill-signals').textContent=`${active} Signals`;
-  document.getElementById('pill-learns').textContent=`Learning: ${meta.sessions||0} sessions`;
-  document.getElementById('pill-memory').textContent=`Memory: ${ledger.length}`;
+  const stocks=Object.keys(allStockData).filter(s=>allStockData[s]&&allStockData[s].index!=='MAJOR INDEX').length;
+  document.getElementById('pill-symbols').textContent=stocks+' Symbols';
+  document.getElementById('pill-signals').textContent=active+' Signals';
+  document.getElementById('pill-learns').innerHTML='<span class="mem-dot"></span>Learning: '+(meta.sessions||0)+' sessions';
+  document.getElementById('pill-memory').textContent='Memory: '+ledger.length;
   const ap=document.getElementById('pill-anomalies');
-  if(anomalyData.length>0){ap.textContent=`${anomalyData.length} Anomalies`;ap.style.display='inline-block'}
-  else ap.style.display='none';
+  if(anomalyData.length>0){ap.textContent=anomalyData.length+' Anomalies';ap.style.display='inline-block'}else ap.style.display='none';
 }
 
-// ── M6 Panel ─────────────────────────────────────────────────
+// ── M6 Panel ──────────────────────────────────────────────────
 function renderSLPanel(){
-  const wGrid=document.getElementById('weightGrid');
-  wGrid.innerHTML='';
-  for(const [sig,prior] of Object.entries(PRIOR_WEIGHTS)){
-    const learned=adaptiveWeights[sig];
-    const base=learned?learned.base:prior,wr=learned?learned.wr:null,n=learned?(learned.n||0):0,delta=learned?(learned.delta||0):0;
-    const barW=Math.round(base/50*100);
-    const barCol=sig.startsWith('B')?'var(--bull)':'var(--bear)';
-    const deltaEl=delta>0?`<span class="weight-delta up">+${delta}</span>`:delta<0?`<span class="weight-delta dn">${delta}</span>`:`<span class="weight-delta same">±0</span>`;
-    wGrid.innerHTML+=`<div class="weight-card">
-      <div class="weight-card-sig">${sig} ${deltaEl}</div>
-      <div class="weight-bar-wrap"><div class="weight-bar-fill" style="width:${barW}%;background:${barCol}"></div></div>
-      <div class="weight-card-stats">
-        <span>Base: <strong style="color:var(--bright)">${base}</strong></span>
-        ${wr!==null?`<span>WR: <strong style="color:${wr>=55?'var(--bull)':'var(--bear)'}">${wr}%</strong></span>`:'<span style="color:var(--text3)">No data</span>'}
-        ${n>0?`<span style="color:var(--text3)">(n=${n})</span>`:''}
-      </div>
-      <div class="ctx-key">Prior: ${prior} → Learned: ${base}</div>
-    </div>`;
+  const wg=document.getElementById('weightGrid');wg.innerHTML='';
+  for(const[sig,prior] of Object.entries(PRIOR_WEIGHTS)){
+    const lw=adaptiveWeights[sig];
+    const base=lw?lw.base:prior,wr=lw?lw.wr:null,n2=lw?lw.n:0,delta=lw?lw.delta:0;
+    const bW=Math.round(base/50*100),bCol=sig.startsWith('B')?'var(--bull)':'var(--bear)';
+    const dEl=delta>0?'<span class="delta-up">+'+delta+'</span>':delta<0?'<span class="delta-dn">'+delta+'</span>':'<span class="delta-eq">±0</span>';
+    wg.innerHTML+='<div class="wc"><div class="wc-sig">'+sig+' '+dEl+'</div><div class="wc-bar"><div class="wc-fill" style="width:'+bW+'%;background:'+bCol+'"></div></div><div class="wc-stats"><span>Base: <b style="color:var(--bright)">'+base+'</b></span>'+(wr!==null?'<span>WR: <b style="color:'+(wr>=55?'var(--bull)':'var(--bear)')+'">'+wr+'%</b></span>':'<span style="color:var(--text3)">No data</span>')+(n2>0?'<span style="color:var(--text3)">(n='+n2+')</span>':'')+'</div></div>';
   }
-
-  // Context win rates
-  const cDiv=document.getElementById('contextWinRates');
-  const entries=Object.entries(contextWinRateMap).sort((a,b)=>b[1].n-a[1].n).slice(0,20);
-  if(entries.length===0){cDiv.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:9px;padding:8px">No context data yet — accumulates as signals resolve over sessions.</div>';return}
-  let html='';
+  const cd=document.getElementById('ctxWR');
+  const entries=Object.entries(contextWRMap).sort((a,b)=>b[1].n-a[1].n).slice(0,20);
+  if(entries.length===0){cd.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:9px;padding:8px">No context data yet — accumulates as signals resolve over sessions.</div>';return}
+  let h='';
   for(const[key,v] of entries){
     const[sig,regime,bBkt,hBkt]=key.split('|');
-    const col=v.wr>=60?'var(--bull)':v.wr>=45?'var(--gold)':'var(--bear)';
-    html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;margin-bottom:3px;background:var(--bg2);border-radius:3px;border:1px solid var(--border)">
-      <span style="font-family:var(--mono);font-size:9px;color:var(--text)">${sig} | ${regime} | brdth:${bBkt} | hvp:${hBkt}</span>
-      <span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${col}">${v.wr}% <span style="color:var(--text3);font-size:8px">(${v.n})</span></span>
-    </div>`;
+    const col=v.wr>=60?'var(--bull)':v.wr>=45?'var(--amber)':'var(--bear)';
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 8px;margin-bottom:3px;background:var(--bg3);border-radius:3px;border:1px solid var(--border)"><span style="font-family:var(--mono);font-size:9px">'+sig+' | '+regime+' | brdth:'+bBkt+' | hvp:'+hBkt+'</span><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+col+'">'+v.wr+'% <span style="color:var(--text3);font-size:8px">('+v.n+')</span></span></div>';
   }
-  cDiv.innerHTML=html;
-
-  const meta=loadMeta();
-  const ledger=loadLedger();
-  const resolved=ledger.filter(r=>r.status==='win'||r.status==='loss');
-  document.getElementById('slMeta').textContent=
-    `Sessions: ${meta.sessions||0}  ·  Total resolved trades: ${resolved.length}  ·  Context keys: ${entries.length}  ·  Last recalibrated: ${meta.lastRun?new Date(meta.lastRun).toLocaleString():'never'}`;
+  cd.innerHTML=h;
+  const meta=loadMeta(),ledger=loadLedger();
+  const res=ledger.filter(r=>r.status==='win'||r.status==='loss');
+  document.getElementById('slMeta').textContent='Sessions: '+(meta.sessions||0)+' · Resolved trades: '+res.length+' · Context keys: '+entries.length+' · Last recalibrated: '+(meta.lastRun?new Date(meta.lastRun).toLocaleString():'never')+' · Learned TP/SL stocks: '+Object.keys(stockTPSL).filter(k=>stockTPSL[k].is_learned).length;
 }
 
 // ── Regime ────────────────────────────────────────────────────
-function renderRegimeStrip(){
+function renderRegime(){
   const row=document.getElementById('regimeRow');row.innerHTML='';
   for(const[sym,data] of Object.entries(regimeData)){
     const col=data.trend==='bull'?'var(--bull)':data.trend==='bear'?'var(--bear)':'var(--text2)';
-    row.innerHTML+=`<div class="regime-chip"><div class="regime-dot" style="background:${col}"></div><span style="color:var(--text2);font-size:8px">${sym}</span><span style="color:${col};font-weight:700">${data.trend.toUpperCase()}</span><span style="color:var(--text3)">HVP:${data.hvp}%</span></div>`;
+    row.innerHTML+='<div class="regime-chip"><div class="regime-dot" style="background:'+col+'"></div><span style="color:var(--text2);font-size:8px">'+sym+'</span><span style="color:'+col+';font-weight:700">'+data.trend.toUpperCase()+'</span><span style="color:var(--text3)">HVP:'+data.hvp+'%</span></div>';
   }
 }
 
 // ── Stats ─────────────────────────────────────────────────────
 function renderStats(){
   const ledger=loadLedger(),active=allSignals.filter(s=>s.signal!=='WAIT');
-  const bulls=active.filter(s=>s.signal.startsWith('B'));
-  const bears=active.filter(s=>s.signal.startsWith('S'));
+  const bulls=active.filter(s=>s.signal&&s.signal.startsWith('B'));
   const resolved=ledger.filter(r=>r.status==='win'||r.status==='loss');
   const wins=resolved.filter(r=>r.status==='win');
   const wr=resolved.length?Math.round(wins.length/resolved.length*100):null;
   const avgPnl=resolved.length?(resolved.reduce((s,r)=>s+(r.pnl_pct||0),0)/resolved.length).toFixed(1):null;
   const mktPct=active.length?Math.round(bulls.length/active.length*100):0;
-  const anomHigh=anomalyData.filter(a=>a.anomalies.some(x=>x.severity==='high')).length;
-  const learned=Object.values(adaptiveWeights).filter(w=>w.n>0).length;
-
-  const ms=(v,l,s,c='')=>`<div class="stat"><div class="stat-val ${c}">${v}</div><div class="stat-lbl">${l}</div>${s?`<div class="stat-sub">${s}</div>`:''}</div>`;
+  const learnedTPSLCount=Object.keys(stockTPSL).filter(k=>stockTPSL[k].is_learned).length;
+  const topMB=mbData.length?mbData[0]:'';
+  const ms=(v,l,s,c)=>'<div class="stat"><div class="stat-val '+(c||'')+'">'+v+'</div><div class="stat-lbl">'+l+'</div>'+(s?'<div class="stat-sub">'+s+'</div>':'')+'</div>';
   document.getElementById('statGrid').innerHTML=
-    ms(active.length,'Active Signals',`${bulls.length}B / ${bears.length}S`)+
-    ms(mktPct+'%','Mkt Breadth',`${bulls.length} bull`,mktPct>55?'c-bull':mktPct<45?'c-bear':'c-gold')+
-    ms(ledger.length,'Memory',`${resolved.length} resolved`,'c-neut')+
-    ms(wr!==null?wr+'%':'—','Win Rate',`${wins.length}/${resolved.length}`,wr!==null?(wr>=55?'c-bull':wr>=40?'c-gold':'c-bear'):'')+
-    ms(avgPnl!==null?(parseFloat(avgPnl)>=0?'+':'')+avgPnl+'%':'—','Avg P&L','per resolved',avgPnl!==null?(parseFloat(avgPnl)>=0?'c-bull':'c-bear'):'')+
-    ms(learned+'/'+Object.keys(PRIOR_WEIGHTS).length,'Weights Learned','signals calibrated','c-purple')+
-    ms(anomalyData.length,'Anomalies',`${anomHigh} high severity`,'c-warn')+
-    ms(sessionCount,'Sessions','learning history','c-gold');
+    ms(active.length,'Active Signals',bulls.length+'B / '+active.filter(s=>s.signal&&s.signal.startsWith('S')).length+'S','')+
+    ms(mktPct+'%','Mkt Breadth',bulls.length+' bull',mktPct>55?'c-bull':mktPct<45?'c-bear':'c-amber')+
+    ms(ledger.length,'Memory',resolved.length+' resolved','c-neut')+
+    ms(wr!==null?wr+'%':'—','Win Rate',wins.length+'/'+resolved.length,wr!==null?(wr>=55?'c-bull':wr>=40?'c-amber':'c-bear'):'')+
+    ms(avgPnl!==null?(parseFloat(avgPnl)>=0?'+':'')+avgPnl+'%':'—','Avg P&L','per resolved trade',avgPnl!==null?(parseFloat(avgPnl)>=0?'c-bull':'c-bear'):'')+
+    ms(learnedTPSLCount,'Adaptive TP/SL','stocks with learned exits','c-purple')+
+    ms(anomalyData.length,'Anomalies',anomalyData.filter(a=>a.anoms.some(x=>x.severity==='high')).length+' high severity','c-exit')+
+    ms(mbData.length>0?mbData[0].sym+'('+mbData[0].mb_score+')':'—','Top MB Candidate',mbData.length>0?mbData[0].sector:'','c-amber');
 }
 
 // ── Insights ──────────────────────────────────────────────────
 function renderInsights(){
   const body=document.getElementById('insightsBody');body.innerHTML='';
   const active=allSignals.filter(s=>s.signal!=='WAIT');
-  const bulls=active.filter(s=>s.signal.startsWith('B'));
-  const ledger=loadLedger();
-  const resolved=ledger.filter(r=>r.status==='win'||r.status==='loss');
+  const bulls=active.filter(s=>s.signal&&s.signal.startsWith('B'));
+  const ledger=loadLedger(),resolved=ledger.filter(r=>r.status==='win'||r.status==='loss');
   const wr=resolved.length?Math.round(resolved.filter(r=>r.status==='win').length/resolved.length*100):null;
   const mktPct=active.length?Math.round(bulls.length/active.length*100):0;
   const nsei=regimeData['NSEI'];
-  const mktClass=mktPct>55?'bull':mktPct<45?'bear':'';
+  const mClass=mktPct>55?'bull':mktPct<45?'bear':'';
+  body.innerHTML+='<div class="insight '+mClass+'"><strong>Market Breadth: '+mktPct+'%</strong> — '+bulls.length+' bull / '+active.filter(s=>s.signal&&s.signal.startsWith('S')).length+' bear signals. NSEI: <strong>'+(nsei?nsei.trend.toUpperCase():'—')+'</strong>.'+(wr!==null?' Ledger win rate: <strong>'+wr+'%</strong> ('+resolved.length+' resolved).':'')+'</div>';
+  const highLWR=active.filter(s=>s.learned_wr!==null&&s.learned_wr>=60).sort((a,b)=>b.learned_wr-a.learned_wr).slice(0,4);
+  if(highLWR.length)body.innerHTML+='<div class="insight bull"><strong>High Learned-WR Signals (≥60%):</strong> '+highLWR.map(s=>s.symbol+' '+s.signal+' LWR:'+s.learned_wr+'%').join(' · ')+'</div>';
+  const bigShifts=Object.entries(adaptiveWeights).filter(function(e){return Math.abs(e[1].delta)>=4}).sort(function(a,b){return Math.abs(b[1].delta)-Math.abs(a[1].delta)}).slice(0,3);
+  if(bigShifts.length)body.innerHTML+='<div class="insight purple"><strong>Significant weight shifts from learning:</strong> '+bigShifts.map(function(e){return e[0]+' '+(e[1].delta>0?'+':'')+e[1].delta+' (WR '+e[1].wr+'%)'}).join(' · ')+'</div>';
+  if(mbData.length>=3)body.innerHTML+='<div class="insight"><strong>Top Multibagger Candidates:</strong> '+mbData.slice(0,3).map(m=>m.sym+' ('+m.ret_250+'% 250d, MB:'+m.mb_score+')').join(' · ')+'</div>';
+  const highAnom=anomalyData.filter(a=>a.anoms.some(x=>x.severity==='high')).slice(0,3);
+  if(highAnom.length)body.innerHTML+='<div class="insight exit"><strong>High-severity anomalies:</strong> '+highAnom.map(a=>a.sym+' ('+a.anoms.find(x=>x.severity==='high').label+')').join(', ')+'</div>';
+}
 
-  body.innerHTML+=`<div class="insight-box ${mktClass}"><strong>Market Breadth: ${mktPct}%</strong> — ${bulls.length} bull / ${active.filter(s=>s.signal.startsWith('S')).length} bear signals. NSEI: <strong>${nsei?nsei.trend.toUpperCase():'—'}</strong>. ${wr!==null?`Ledger win rate: <strong>${wr}%</strong> (${resolved.length} resolved).`:''}</div>`;
-
-  // Best signals by learned WR
-  const withLWR=active.filter(s=>s.learned_wr!==null&&s.learned_wr>=60).sort((a,b)=>b.learned_wr-a.learned_wr).slice(0,4);
-  if(withLWR.length)body.innerHTML+=`<div class="insight-box bull"><strong>High Learned-WR Signals (≥60%):</strong> ${withLWR.map(s=>`${s.symbol} ${s.signal} LWR:${s.learned_wr}%`).join(' · ')}</div>`;
-
-  // Weight shifts
-  const bigShifts=Object.entries(adaptiveWeights).filter(([,v])=>Math.abs(v.delta)>=4).sort((a,b)=>Math.abs(b[1].delta)-Math.abs(a[1].delta)).slice(0,3);
-  if(bigShifts.length)body.innerHTML+=`<div class="insight-box purple"><strong>Significant weight shifts from learning:</strong> ${bigShifts.map(([sig,w])=>`${sig} ${w.delta>0?'+':''}${w.delta} (WR ${w.wr}%)`).join(' · ')} — scores adjusted for these signal types.</div>`;
-
-  // Anomaly summary
-  const highAnom=anomalyData.filter(a=>a.anomalies.some(x=>x.severity==='high')).slice(0,3);
-  if(highAnom.length)body.innerHTML+=`<div class="insight-box warn"><strong>High-severity anomalies:</strong> ${highAnom.map(a=>`${a.sym} (${a.anomalies.find(x=>x.severity==='high').label})`).join(', ')} — check anomaly tab for opportunity mapping.</div>`;
-
-  // Cascade opportunities today
-  const cascadeOpps=[];
-  for(const[sec,data] of Object.entries(cascadeData)){
-    const leaders=data.bull.filter(s=>s.role==='leader');
-    if(leaders.length>0){
-      const followers=data.bull.filter(s=>s.role==='follower');
-      if(followers.length>0)cascadeOpps.push(`<strong>${sec}</strong>: ${leaders[0].symbol} led → watch ${followers.slice(0,2).map(s=>s.symbol).join(', ')}`);
-    }
-  }
-  if(cascadeOpps.length)body.innerHTML+=`<div class="insight-box bull"><strong>Sector cascade opportunities:</strong> ${cascadeOpps.slice(0,3).join(' · ')}</div>`;
+// ── Filters ───────────────────────────────────────────────────
+function populateFilters(){
+  const secs=[...new Set(allSignals.map(s=>s.sector))].sort();
+  ['fSector','anomSector','tpslSector','mbSector'].forEach(function(id){
+    const el=document.getElementById(id);if(!el)return;
+    el.innerHTML='<option value="all">All Sectors</option>'+secs.map(function(s){return'<option value="'+s+'">'+s+'</option>'}).join('');
+  });
 }
 
 // ── Signal Table ──────────────────────────────────────────────
-function populateFilters(){
-  const secs=[...new Set(allSignals.map(s=>s.sector))].sort();
-  ['fSector','anomSector','corrSector'].forEach(id=>{
-    const el=document.getElementById(id);if(!el)return;
-    el.innerHTML='<option value="all">All Sectors</option>'+secs.map(s=>`<option value="${s}">${s}</option>`).join('');
-  });
-}
-
-function renderSignalsTable(){
-  const sec=document.getElementById('fSector').value;
-  const sig=document.getElementById('fSignal').value;
-  const reg=document.getElementById('fRegime').value;
-  const minScore=parseInt(document.getElementById('fScoreMin').value||0);
-
-  let data=allSignals.filter(s=>s.signal!=='WAIT');
-  if(sec!=='all')data=data.filter(s=>s.sector===sec);
-  if(sig!=='all')data=data.filter(s=>s.signal===sig);
-  if(reg!=='all')data=data.filter(s=>s.regime===reg);
-  if(minScore>0)data=data.filter(s=>s.score>=minScore);
-
-  data.sort((a,b)=>{
-    const va=a[sortCol],vb=b[sortCol];
-    if(va===null||va===undefined)return 1;if(vb===null||vb===undefined)return -1;
-    return(va<vb?-1:va>vb?1:0)*sortDir;
-  });
-
+function renderSigTable(){
+  const sec=document.getElementById('fSector').value,sig=document.getElementById('fSignal').value;
+  const reg=document.getElementById('fRegime').value,min=parseInt(document.getElementById('fScoreMin').value||0);
+  let data=allSignals.filter(function(s){return s.signal!=='WAIT'});
+  if(sec!=='all')data=data.filter(function(s){return s.sector===sec});
+  if(sig!=='all')data=data.filter(function(s){return s.signal===sig});
+  if(reg!=='all')data=data.filter(function(s){return s.regime===reg});
+  if(min>0)data=data.filter(function(s){return s.score>=min});
+  data.sort(function(a,b){const va=a[sortCol],vb=b[sortCol];if(va===null||va===undefined)return 1;if(vb===null||vb===undefined)return-1;return(va<vb?-1:va>vb?1:0)*sortDir});
   document.getElementById('fShowing').textContent=data.length;
-  document.getElementById('fTotal').textContent=allSignals.filter(s=>s.signal!=='WAIT').length;
-
+  document.getElementById('fTotal').textContent=allSignals.filter(function(s){return s.signal!=='WAIT'}).length;
   const tbody=document.getElementById('sigBody');tbody.innerHTML='';
   for(const r of data){
-    const isBull=r.signal.startsWith('B');
-    const rowCls=r.signal==='B1-OS'||r.signal==='B1-MOM'?'row-b1':r.signal==='B2'?'row-b2':r.signal==='S1-OB'||r.signal==='S1-MOM'?'row-s1':r.signal==='S2'?'row-s2':'';
-    const sBadge=isBull?'badge-bull':'badge-bear';
-    const scCls=r.score>=70?'score-s':r.score>=55?'score-a':r.score>=40?'score-b':'score-c';
-    const regCol=r.regime==='bull'?'var(--bull)':r.regime==='bear'?'var(--bear)':'var(--gold)';
-    const lwrStr=r.learned_wr!==null?`<span style="font-weight:700;color:${r.learned_wr>=60?'var(--bull)':r.learned_wr>=45?'var(--gold)':'var(--bear)'}">${r.learned_wr}%</span>`:'<span style="color:var(--text3)">—</span>';
-    const zStr=r.zscore_price!==undefined?`<span style="color:${Math.abs(r.zscore_price)>=2?'var(--warn)':'var(--text2)'}">${r.zscore_price>0?'+':''}${r.zscore_price}</span>`:'—';
-    const corrStr=r.nsei_corr!==null?`<span style="color:${r.nsei_corr>0.7?'var(--bull)':r.nsei_corr<0.2?'var(--neut)':'var(--text2)'}">${r.nsei_corr}</span>`:'—';
-    // Cascade role
+    const isBull=r.signal&&r.signal.startsWith('B');
+    const rCls=r.signal==='B1-OS'||r.signal==='B1-MOM'?'row-b1':r.signal==='B2'?'row-b2':r.signal==='S1-OB'||r.signal==='S1-MOM'?'row-s1':r.signal==='S2'?'row-s2':'';
+    const sBadge=isBull?'b-bull':'b-bear';
+    const scCls=r.score>=70?'sc-s':r.score>=55?'sc-a':r.score>=40?'sc-b':'sc-c';
+    const rCol=r.regime==='bull'?'var(--bull)':r.regime==='bear'?'var(--bear)':'var(--amber)';
+    const lwrStr=r.learned_wr!==null?'<span style="font-weight:700;color:'+(r.learned_wr>=60?'var(--bull)':r.learned_wr>=45?'var(--amber)':'var(--bear)')+'">'+r.learned_wr+'%</span>':'<span style="color:var(--text3)">—</span>';
+    const retStr=r.ret_250d!==null?'<span style="color:'+(r.ret_250d>20?'var(--bull)':r.ret_250d<-10?'var(--bear)':'var(--text2)')+'">'+r.ret_250d+'%</span>':'—';
+    const tpSlBadge='<span class="tpsl-badge '+(r.tp_sl_source==='learned'?'tpsl-learned':'tpsl-prior')+'">'+(r.tp_sl_source==='learned'?'★ Lrn':'Prior')+'</span>';
+    const tpSlStr=tpSlBadge+' <span class="c-bull">'+r.tp+'</span>/<span class="c-bear">'+r.sl+'</span>';
+    const retBefStr=r.avg_ret_before_exit!==null?'<span style="color:'+(r.avg_ret_before_exit>0?'var(--bull)':'var(--bear)')+'">'+(r.avg_ret_before_exit>0?'+':'')+r.avg_ret_before_exit+'%</span>':'—';
+    const mbStr=r.mb_score!==null?'<span style="color:var(--amber);font-weight:700">'+r.mb_score+'</span>':'—';
     const secCasc=cascadeData[r.sector];
     const cascInf=secCasc&&secCasc.bull?secCasc.bull.find(function(b){return b.symbol===r.symbol}):null;
-    const cascBadge=cascInf&&cascInf.role==='leader'?'<span class="badge badge-bull">Leader</span>':cascInf&&cascInf.role==='follower'?'<span class="badge badge-gold">Follower</span>':'<span style="color:var(--text3)">—</span>';
-
-    tbody.innerHTML+=`<tr class="${rowCls}">
-      <td style="font-weight:700;color:var(--bright)">${r.symbol}</td>
-      <td style="color:var(--text2);font-size:9px;max-width:110px;overflow:hidden;text-overflow:ellipsis">${r.sector}</td>
-      <td><span class="badge ${sBadge}">${r.signal}</span></td>
-      <td><div class="score-ring ${scCls}">${r.score}</div></td>
-      <td>${lwrStr}</td>
-      <td style="color:var(--text2)">${r.entry_date}</td>
-      <td style="color:var(--bright)">₹${r.entry_price.toLocaleString('en-IN',{maximumFractionDigits:2})}</td>
-      <td style="font-size:9px"><span class="c-bull">${r.tp}</span>/<span class="c-bear">${r.sl}</span></td>
-      <td style="color:var(--text2)">${r.rr}</td>
-      <td><div style="min-width:52px"><div style="font-size:9px;color:${r.hvp>50?'var(--bull)':r.hvp<30?'var(--bear)':'var(--text2)'}">P${r.hvp}</div><div class="hvp-bar"><div class="hvp-fill" style="width:${r.hvp}%;background:${r.hvp>60?'var(--bull)':r.hvp<30?'var(--bear)':'var(--gold)'}"></div></div></div></td>
-      <td style="color:${regCol};font-weight:700;font-size:9px">${r.regime.toUpperCase()}</td>
-      <td style="font-size:9px">${r.sector_breadth}%</td>
-      <td>${zStr}</td>
-      <td>${corrStr}</td>
-      <td>${cascBadge}</td>
-    </tr>`;
+    const cascBadge=cascInf&&cascInf.role==='leader'?'<span class="badge b-bull">Leader</span>':cascInf&&cascInf.role==='follower'?'<span class="badge b-amber">Follower</span>':'—';
+    tbody.innerHTML+='<tr class="'+rCls+'"><td style="font-weight:700;color:var(--bright)">'+r.symbol+'</td><td style="color:var(--text2);font-size:9px;max-width:100px;overflow:hidden;text-overflow:ellipsis">'+r.sector+'</td><td><span class="badge '+sBadge+'">'+r.signal+'</span></td><td><div class="score-ring '+scCls+'">'+r.score+'</div></td><td>'+lwrStr+'</td><td>'+retStr+'</td><td style="color:var(--bright)">₹'+r.entry_price.toLocaleString('en-IN',{maximumFractionDigits:2})+'</td><td style="font-size:9px">'+tpSlStr+'</td><td style="color:var(--text2)">'+r.rr+'</td><td><div style="min-width:50px"><div style="font-size:9px;color:'+(r.hvp>50?'var(--bull)':r.hvp<30?'var(--bear)':'var(--text2)')+'">P'+r.hvp+'</div><div class="hvp-bar"><div class="hvp-fill" style="width:'+r.hvp+'%;background:'+(r.hvp>60?'var(--bull)':r.hvp<30?'var(--bear)':'var(--amber)')+'"></div></div></div></td><td>'+retBefStr+'</td><td style="color:'+rCol+';font-weight:700;font-size:9px">'+r.regime.toUpperCase()+'</td><td style="font-size:9px">'+r.sector_breadth+'%</td><td style="font-size:9px;color:'+(r.nsei_corr!==null&&r.nsei_corr>0.7?'var(--bull)':r.nsei_corr!==null&&r.nsei_corr<0.2?'var(--neut)':'var(--text2)')+'">'+((r.nsei_corr!==null)?r.nsei_corr:'—')+'</td><td>'+mbStr+'</td><td>'+cascBadge+'</td></tr>';
   }
 }
-
-function sortSig(col){
-  if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=-1}
-  document.querySelectorAll('#sigTable thead th').forEach(th=>th.classList.remove('s-asc','s-desc'));
-  renderSignalsTable();
-}
+function sortSig(col){if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=-1}renderSigTable()}
 
 // ── Ledger ────────────────────────────────────────────────────
 function renderLedger(){
   const ledger=loadLedger();
-  const resolved=ledger.filter(r=>r.status!=='open');
-  const wins=resolved.filter(r=>r.status==='win');
-  const open=ledger.filter(r=>r.status==='open');
-  const wr=resolved.length?Math.round(wins.length/resolved.length*100):0;
+  const resolved=ledger.filter(r=>r.status!=='open');const wins=resolved.filter(r=>r.status==='win');
+  const open=ledger.filter(r=>r.status==='open');const wr=resolved.length?Math.round(wins.length/resolved.length*100):0;
   const avgPnl=resolved.length?(resolved.reduce((s,r)=>s+(r.pnl_pct||0),0)/resolved.length).toFixed(1):'—';
-  const ms=(v,l,s,c='')=>`<div class="stat"><div class="stat-val ${c}">${v}</div><div class="stat-lbl">${l}</div>${s?`<div class="stat-sub">${s}</div>`:''}</div>`;
+  const ms=(v,l,s,c)=>'<div class="stat"><div class="stat-val '+(c||'')+'">'+v+'</div><div class="stat-lbl">'+l+'</div>'+(s?'<div class="stat-sub">'+s+'</div>':'')+'</div>';
   document.getElementById('ledgerStats').innerHTML=
-    ms(ledger.length,'Total','incl. '+open.length+' open')+
-    ms(resolved.length,'Resolved',wins.length+'W / '+(resolved.length-wins.length)+'L')+
-    ms(wr+'%','Win Rate','',wr>=55?'c-bull':wr>=40?'c-gold':'c-bear')+
+    ms(ledger.length,'Total',open.length+' open','')+ms(resolved.length,'Resolved',wins.length+'W/'+(resolved.length-wins.length)+'L','')+
+    ms(wr+'%','Win Rate','',wr>=55?'c-bull':wr>=40?'c-amber':'c-bear')+
     ms(avgPnl!=='—'?(parseFloat(avgPnl)>=0?'+':'')+avgPnl+'%':'—','Avg P&L','',avgPnl!=='—'?(parseFloat(avgPnl)>=0?'c-bull':'c-bear'):'');
-
-  // Per-signal breakdown
   const sigBreak={};
-  for(const r of resolved){
-    if(!sigBreak[r.signal])sigBreak[r.signal]={wins:0,total:0};
-    sigBreak[r.signal].total++;if(r.status==='win')sigBreak[r.signal].wins++;
-  }
-  let sbHtml='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">';
-  for(const[sig,st] of Object.entries(sigBreak)){
-    const w=Math.round(st.wins/st.total*100);
-    const col=w>=60?'var(--bull)':w>=45?'var(--gold)':'var(--bear)';
-    sbHtml+=`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:5px 9px;font-family:var(--mono);font-size:9px"><span style="color:var(--bright);font-weight:700">${sig}</span> <span style="color:${col}">${w}%WR</span> <span style="color:var(--text3)">(${st.total})</span></div>`;
-  }
-  sbHtml+='</div>';
-  document.getElementById('ledgerBySignal').innerHTML=sbHtml;
-
+  for(const r of resolved){if(!sigBreak[r.signal])sigBreak[r.signal]={wins:0,total:0};sigBreak[r.signal].total++;if(r.status==='win')sigBreak[r.signal].wins++}
+  let sb='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">';
+  for(const[sig,st] of Object.entries(sigBreak)){const w=Math.round(st.wins/st.total*100);const col=w>=60?'var(--bull)':w>=45?'var(--amber)':'var(--bear)';sb+='<div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:4px 9px;font-family:var(--mono);font-size:9px"><span style="color:var(--bright);font-weight:700">'+sig+'</span> <span style="color:'+col+'">'+w+'%WR</span> <span style="color:var(--text3)">('+st.total+')</span></div>'}
+  sb+='</div>';document.getElementById('ledgerBySig').innerHTML=sb;
   const tbody=document.getElementById('ledgerBody');tbody.innerHTML='';
   for(const r of [...ledger].reverse()){
-    const isBull=r.signal && r.signal.startsWith('B');
-    const sBadge=isBull?'badge-bull':'badge-bear';
-    const oBadge=r.status==='win'?'badge-win':r.status==='loss'?'badge-loss':r.status==='open'?'badge-open':'badge-dim';
+    const isBull=r.signal&&r.signal.startsWith('B');
+    const sBadge=isBull?'b-bull':'b-bear';
+    const oBadge=r.status==='win'?'b-win':r.status==='loss'?'b-loss':r.status==='open'?'b-open':'b-dim';
     const pCls=r.pnl_pct!==null?(r.pnl_pct>=0?'c-bull':'c-bear'):'';
-    const lwrStr=r.learned_wr!==null?`<span style="font-size:9px;color:${r.learned_wr>=60?'var(--bull)':'var(--text2)'}">${r.learned_wr}%</span>`:'—';
-    tbody.innerHTML+=`<tr>
-      <td style="font-weight:700;color:var(--bright)">${r.symbol}</td>
-      <td style="color:var(--text2);font-size:9px">${r.sector}</td>
-      <td><span class="badge ${sBadge}">${r.signal}</span></td>
-      <td style="color:var(--gold)">${r.score}</td>
-      <td>${lwrStr}</td>
-      <td style="color:var(--text2)">${r.entry_date}</td>
-      <td>₹${(r.entry_price||0).toLocaleString('en-IN',{maximumFractionDigits:2})}</td>
-      <td class="c-bull" style="font-size:9px">${r.tp}</td>
-      <td class="c-bear" style="font-size:9px">${r.sl}</td>
-      <td><span class="badge ${oBadge}">${(r.status||'').toUpperCase()}</span></td>
-      <td class="${pCls}" style="font-weight:700">${r.pnl_pct!==null?(r.pnl_pct>=0?'+':'')+r.pnl_pct+'%':'—'}</td>
-      <td style="color:var(--text2)">${r.bars_to_exit||'—'}</td>
-      <td style="font-size:9px;color:${r.regime==='bull'?'var(--bull)':r.regime==='bear'?'var(--bear)':'var(--gold)'}">${(r.regime||'—').toUpperCase()}</td>
-      <td style="font-size:9px">${r.sector_breadth||'—'}%</td>
-      <td style="font-size:9px;color:${(r.hvp||0)>50?'var(--bull)':'var(--text2)'}">P${r.hvp||'—'}</td>
-    </tr>`;
+    const lwrStr=r.learned_wr!==null?'<span style="font-size:9px;color:'+(r.learned_wr>=60?'var(--bull)':'var(--text2)')+'">'+r.learned_wr+'%</span>':'—';
+    tbody.innerHTML+='<tr><td style="font-weight:700;color:var(--bright)">'+r.symbol+'</td><td style="color:var(--text2);font-size:9px">'+r.sector+'</td><td><span class="badge '+sBadge+'">'+r.signal+'</span></td><td style="color:var(--amber)">'+r.score+'</td><td>'+lwrStr+'</td><td style="color:var(--text2)">'+r.entry_date+'</td><td>₹'+(r.entry_price||0).toLocaleString('en-IN',{maximumFractionDigits:2})+'</td><td class="c-bull" style="font-size:9px">'+r.tp+'</td><td class="c-bear" style="font-size:9px">'+r.sl+'</td><td><span class="badge '+oBadge+'">'+(r.status||'').toUpperCase()+'</span></td><td class="'+pCls+'" style="font-weight:700">'+(r.pnl_pct!==null?(r.pnl_pct>=0?'+':'')+r.pnl_pct+'%':'—')+'</td><td style="color:var(--text2)">'+(r.bars_to_exit||'—')+'</td><td style="font-size:9px;color:'+(r.regime==='bull'?'var(--bull)':r.regime==='bear'?'var(--bear)':'var(--amber)')+'">'+(r.regime||'—').toUpperCase()+'</td><td style="font-size:9px">'+(r.sector_breadth||'—')+'%</td><td style="font-size:9px;color:'+((r.hvp||0)>50?'var(--bull)':'var(--text2)')+'">P'+(r.hvp||'—')+'</td></tr>';
   }
 }
 
-// ── M1 Anomaly Render ─────────────────────────────────────────
-function renderAnomalies(){
-  const filterSec=document.getElementById('anomSector').value;
-  const filterType=document.getElementById('anomType').value;
-  let data=anomalyData;
-  if(filterSec!=='all')data=data.filter(a=>a.sector===filterSec);
-  if(filterType!=='all')data=data.filter(a=>a.anomalies.some(x=>x.type===filterType));
+// ── Return Correlation ────────────────────────────────────────
+function renderRetCorr(){
+  // 1. Signal type vs 250d return
+  const sigRets={};
+  for(const rec of allSignals){
+    if(rec.signal==='WAIT'||rec.ret_250d===null)continue;
+    if(!sigRets[rec.signal])sigRets[rec.signal]=[];
+    sigRets[rec.signal].push(rec.ret_250d);
+  }
+  let h='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px">';
+  for(const[sig,rets] of Object.entries(sigRets)){
+    if(rets.length<3)continue;
+    const avg=rets.reduce((a,b)=>a+b,0)/rets.length;
+    const maxR=Math.max.apply(null,rets.map(Math.abs));
+    const barW=Math.round(Math.abs(avg)/Math.max(maxR,1)*100);
+    const col=avg>10?'var(--bull)':avg<-5?'var(--bear)':'var(--amber)';
+    h+='<div class="ret-corr-card"><div class="ret-corr-sig">'+sig+' <span style="color:var(--text2);font-size:9px">(n='+rets.length+')</span></div><div class="ret-corr-bar"><div class="ret-corr-fill" style="width:'+barW+'%;background:'+col+'"></div><div class="ret-corr-txt" style="color:var(--bright)">'+(avg>=0?'+':'')+avg.toFixed(1)+'% avg 250d ret</div></div><div style="font-size:9px;font-family:var(--mono);color:var(--text2)">Best: <span class="c-bull">+'+Math.max.apply(null,rets).toFixed(1)+'%</span> Worst: <span class="c-bear">'+Math.min.apply(null,rets).toFixed(1)+'%</span></div></div>';
+  }
+  h+='</div>';document.getElementById('retCorrSignals').innerHTML=h;
 
+  // 2. Sector return distribution
+  const secRets={};
+  for(const[sym,ret] of Object.entries(stockReturns)){
+    const sec=allStockData[sym]?allStockData[sym].sector:'N/A';
+    if(!secRets[sec])secRets[sec]=[];
+    secRets[sec].push(ret.ret_250);
+  }
+  let sh='<div class="sector-grid">';
+  for(const[sec,rets] of Object.entries(secRets).sort((a,b)=>{const aA=a[1].reduce((x,y)=>x+y,0)/a[1].length,bA=b[1].reduce((x,y)=>x+y,0)/b[1].length;return bA-aA})){
+    const avg=rets.reduce((a,b)=>a+b,0)/rets.length;
+    const pct=Math.min(Math.abs(avg)/100,1)*100;
+    const col=avg>15?'var(--bull)':avg>0?'var(--bull)':avg>-10?'var(--amber)':'var(--bear)';
+    sh+='<div class="sc"><div style="font-size:10px;font-weight:700;color:var(--bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+sec+'">'+sec+'</div><div class="sc-bar"><div class="sc-fill" style="width:'+pct+'%;background:'+col+'"></div></div><div style="display:flex;gap:8px;font-family:var(--mono);font-size:9px"><span style="color:'+col+';font-weight:700">'+(avg>=0?'+':'')+avg.toFixed(1)+'%</span><span style="color:var(--text3)">'+rets.length+' stocks</span></div></div>';
+  }
+  sh+='</div>';document.getElementById('sectorRetDist').innerHTML=sh;
+
+  // 3. Return vs HVP
+  const hvpRets=[[],[],[],[],[]]; // <20, 20-40, 40-60, 60-80, >80
+  for(const rec of allSignals){
+    if(rec.ret_250d===null||rec.signal==='WAIT')continue;
+    const bucket=rec.hvp<20?0:rec.hvp<40?1:rec.hvp<60?2:rec.hvp<80?3:4;
+    hvpRets[bucket].push(rec.ret_250d);
+  }
+  const hvpLabels=['HVP 0-20','HVP 20-40','HVP 40-60','HVP 60-80','HVP 80+'];
+  let hh='<div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">';
+  for(let i=0;i<5;i++){
+    if(hvpRets[i].length<2)continue;
+    const avg=hvpRets[i].reduce((a,b)=>a+b,0)/hvpRets[i].length;
+    const col=avg>10?'var(--bull)':avg<0?'var(--bear)':'var(--amber)';
+    hh+='<div style="text-align:center;min-width:80px"><div style="font-family:var(--mono);font-size:11px;font-weight:700;color:'+col+'">'+(avg>=0?'+':'')+avg.toFixed(1)+'%</div><div style="height:'+(20+Math.abs(avg)*1.5)+'px;width:60px;background:'+col+';opacity:0.5;margin:4px auto;border-radius:3px 3px 0 0"></div><div style="font-family:var(--mono);font-size:8px;color:var(--text2)">'+hvpLabels[i]+'<br>('+hvpRets[i].length+')</div></div>';
+  }
+  hh+='</div>';document.getElementById('retHVPCorr').innerHTML=hh;
+}
+
+// ── Adaptive TP/SL ────────────────────────────────────────────
+let sortColTPSLv='n',sortDirTPSLv=-1;
+function renderTPSL(){
+  const secF=document.getElementById('tpslSector').value;
+  const filter=document.getElementById('tpslFilter').value;
+  let data=Object.entries(stockTPSL).map(function(e){return Object.assign({symbol:e[0]},e[1],{sector:(allStockData[e[0]]?allStockData[e[0]].sector:'N/A')})});
+  if(secF!=='all')data=data.filter(function(d){return d.sector===secF});
+  if(filter==='learned')data=data.filter(function(d){return d.is_learned});
+  if(filter==='prior')data=data.filter(function(d){return !d.is_learned});
+  data.sort(function(a,b){const va=a[sortColTPSLv],vb=b[sortColTPSLv];if(va===null||va===undefined)return 1;if(vb===null||vb===undefined)return-1;return(va<vb?-1:va>vb?1:0)*sortDirTPSLv});
+  const tbody=document.getElementById('tpslBody');tbody.innerHTML='';
+  for(const d of data){
+    const wrCol=d.win_rate>=60?'var(--bull)':d.win_rate>=40?'var(--amber)':'var(--bear)';
+    const retBefCol=d.avg_ret_before_exit>0?'var(--bull)':'var(--bear)';
+    tbody.innerHTML+='<tr class="'+(d.is_learned?'row-mb':'')+'"><td style="font-weight:700;color:var(--bright)">'+d.symbol+'</td><td style="color:var(--text2);font-size:9px">'+d.sector+'</td><td style="color:var(--amber)">'+d.n+'</td><td class="c-bull">'+(d.avg_win_ret!==null?'+'+d.avg_win_ret+'%':'—')+'</td><td class="c-bear">'+(d.avg_loss_ret!==null?d.avg_loss_ret+'%':'—')+'</td><td style="color:'+retBefCol+';font-weight:700">'+(d.avg_ret_before_exit!==null?(d.avg_ret_before_exit>0?'+':'')+d.avg_ret_before_exit+'%':'—')+'</td><td style="color:var(--text2)">'+(d.avg_bars?d.avg_bars+'b':'—')+'</td><td><span class="badge '+(d.is_learned?'b-bull':'b-dim')+'">'+(d.is_learned?'★ Learned':'Prior ATR')+'</span></td><td style="color:var(--bull)">'+(d.learned_tp_mult!==null?d.learned_tp_mult+'×':'—')+'</td><td style="color:var(--bear)">'+(d.learned_sl_mult!==null?d.learned_sl_mult+'×':'—')+'</td><td style="color:'+wrCol+';font-weight:700">'+(d.win_rate!==null?d.win_rate+'%':'—')+'</td></tr>';
+  }
+}
+function sortTPSL(col){if(sortColTPSLv===col)sortDirTPSLv*=-1;else{sortColTPSLv=col;sortDirTPSLv=-1}renderTPSL()}
+
+// ── Multibagger ───────────────────────────────────────────────
+function renderMB(){
+  const secF=document.getElementById('mbSector').value;
+  const idxF=document.getElementById('mbIndex').value;
+  const minScore=parseInt(document.getElementById('mbMinScore').value||0);
+  let data=mbData;
+  if(secF!=='all')data=data.filter(function(m){return m.sector===secF});
+  if(idxF!=='all')data=data.filter(function(m){return m.index===idxF});
+  if(minScore>0)data=data.filter(function(m){return m.mb_score>=minScore});
+
+  const ins=document.getElementById('mbInsights');ins.innerHTML='';
+  const top3=data.slice(0,3);
+  if(top3.length)ins.innerHTML='<div class="insight"><strong>Top Multibagger Candidates:</strong> '+top3.map(function(m){return'<strong>'+m.sym+'</strong> ('+m.ret_250+'% 250d, trend consistency '+m.trend_consistency+'%, MB score '+m.mb_score+'/100)'}).join(' · ')+'</div>';
+
+  const grid=document.getElementById('mbGrid');grid.innerHTML='';
+  for(let i=0;i<Math.min(data.length,40);i++){
+    const m=data[i];
+    const isTop3=i<3;
+    const retCol=m.ret_250>50?'var(--bull)':m.ret_250>0?'var(--amber)':'var(--bear)';
+    const curSig=allSignals.find(function(s){return s.symbol===m.sym});
+    const sigBadge=curSig&&curSig.signal!=='WAIT'?'<span class="badge '+(curSig.signal.startsWith('B')?'b-bull':'b-bear')+'">'+curSig.signal+'</span>':'';
+    grid.innerHTML+='<div class="mb-card'+(isTop3?' top3':'')+'"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px"><div><div class="mb-sym">'+m.sym+'</div><div class="mb-sector">'+m.sector+'</div></div><div style="text-align:right"><span class="badge b-mb">MB '+m.mb_score+'</span>'+(m.momentum_build?'<br><span style="font-size:8px;color:var(--bull);font-family:var(--mono);margin-top:2px">▲ MOM ACCEL</span>':'')+sigBadge+'</div></div><div class="mb-score-bar"><div class="mb-score-fill" style="width:'+m.mb_score+'%"></div></div><div class="mb-stats"><div class="mb-stat"><div class="mb-stat-val" style="color:'+retCol+'">'+(m.ret_250>0?'+':'')+m.ret_250+'%</div><div class="mb-stat-lbl">250d Return</div></div><div class="mb-stat"><div class="mb-stat-val c-amber">'+m.trend_consistency+'%</div><div class="mb-stat-lbl">Trend Consist</div></div><div class="mb-stat"><div class="mb-stat-val c-bear">'+m.max_dd+'%</div><div class="mb-stat-lbl">Max DD</div></div><div class="mb-stat"><div class="mb-stat-val" style="color:var(--text2)">'+m.hv.toFixed(0)+'%</div><div class="mb-stat-lbl">HV</div></div></div></div>';
+  }
+}
+
+// ── Anomalies ─────────────────────────────────────────────────
+function renderAnomalies(){
+  const secF=document.getElementById('anomSector').value;
+  const typeF=document.getElementById('anomType').value;
+  let data=anomalyData;
+  if(secF!=='all')data=data.filter(function(a){return a.sector===secF});
+  if(typeF!=='all')data=data.filter(function(a){return a.anoms.some(function(x){return x.type===typeF})});
   const grid=document.getElementById('anomalyGrid');
-  if(data.length===0){grid.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:10px;padding:16px">No anomalies found with current filters.</div>';return}
+  if(!data.length){grid.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:10px;padding:16px">No anomalies with current filters.</div>';return}
   grid.innerHTML='';
   for(const a of data){
-    for(const anom of a.anomalies){
-      if(filterType!=='all'&&anom.type!==filterType)continue;
-      const curSig=allSignals.find(s=>s.symbol===a.sym);
-      grid.innerHTML+=`<div class="anomaly-card ${anom.severity}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div><div class="anomaly-sym">${a.sym}</div><div class="anomaly-type">${a.sector}</div></div>
-          <div style="text-align:right">
-            <div class="anomaly-z" style="color:${anom.color}">${anom.z>0?'+':''}${anom.z}σ</div>
-            <span class="badge ${anom.severity==='high'?'badge-loss':'badge-gold'}" style="font-size:8px">${anom.severity.toUpperCase()}</span>
-          </div>
-        </div>
-        <div class="anomaly-type" style="margin-top:4px;color:${anom.color}">${anom.label}</div>
-        ${curSig&&curSig.signal!=='WAIT'?`<div style="margin-top:4px"><span class="badge badge-bull">${curSig.signal}</span> Score: ${curSig.score}</div>`:''}
-        <div class="anomaly-opp">${anom.opportunity}</div>
-      </div>`;
+    for(const anom of a.anoms){
+      if(typeF!=='all'&&anom.type!==typeF)continue;
+      const curSig=allSignals.find(function(s){return s.symbol===a.sym});
+      grid.innerHTML+='<div class="anom-card '+anom.severity+'"><div style="display:flex;justify-content:space-between"><div><div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--bright)">'+a.sym+'</div><div style="font-size:9px;color:var(--text2);font-family:var(--mono)">'+a.sector+'</div></div><div style="text-align:right"><div style="font-family:var(--mono);font-size:11px;font-weight:700;color:'+(anom.z>0?'var(--bear)':'var(--bull)')+'">'+(anom.z>0?'+':'')+anom.z+'σ</div><span class="badge '+(anom.severity==='high'?'b-bear':'b-amber')+'" style="font-size:8px">'+anom.severity.toUpperCase()+'</span></div></div><div style="font-size:9px;color:var(--exit);font-family:var(--mono);margin-top:4px">'+anom.label+'</div>'+(curSig&&curSig.signal!=='WAIT'?'<div style="margin-top:3px"><span class="badge '+(curSig.signal.startsWith('B')?'b-bull':'b-bear')+'">'+curSig.signal+'</span> Score: '+curSig.score+'</div>':'')+'<div class="anom-opp">'+anom.opportunity+'</div></div>';
     }
   }
 }
 
-// ── M4 Cascade Render ─────────────────────────────────────────
+// ── Cascade ───────────────────────────────────────────────────
 function renderCascade(){
-  const container=document.getElementById('cascadeContainer');
-  container.innerHTML='';
-  const opps=document.getElementById('cascadeOpps');
-  opps.innerHTML='';
-
-  if(Object.keys(cascadeData).length===0){
-    container.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:10px;padding:12px">No intra-sector cascade patterns in current session. Builds with more data sessions.</div>';
-    return;
-  }
-
+  const container=document.getElementById('cascadeContainer'),opps=document.getElementById('cascadeOpps');
+  container.innerHTML='';opps.innerHTML='';
+  if(!Object.keys(cascadeData).length){container.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:10px;padding:12px">No cascade data yet. Builds with more sessions.</div>';return}
   let oppHtml='';
   for(const[sec,data] of Object.entries(cascadeData)){
     if(data.bull.length<2&&data.bear.length<2)continue;
-    let html=`<div class="cascade-sector"><div class="cascade-sector-name">${sec}</div>`;
-
+    let h='<div class="cascade-sec"><div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--amber)">'+sec+'</div>';
     if(data.bull.length>=1){
-      html+=`<div style="font-family:var(--mono);font-size:8px;color:var(--text2);margin-bottom:4px">BULL SIGNALS — ranked by role</div>`;
-      html+=`<div class="cascade-row">`;
+      h+='<div style="font-family:var(--mono);font-size:8px;color:var(--text2);margin-top:4px">BULL → cascade</div><div class="cascade-row">';
       for(const s of data.bull){
-        const cls=s.role==='leader'?'cascade-stock leader':s.role==='follower'?'cascade-stock follower1':'cascade-stock follower2';
-        html+=`<span class="${cls}">${s.symbol}<br><span style="font-size:7px">${s.signal} ${s.score}</span></span>`;
-        if(data.bull.indexOf(s)<data.bull.length-1)html+=`<span class="cascade-arrow">→</span>`;
+        const cls=s.role==='leader'?'cas-leader':s.role==='follower'?'cas-follower':'cas-new';
+        h+='<span class="cas-stock '+cls+'">'+s.symbol+'<br><span style="font-size:7px">'+s.signal+' '+s.score+'</span></span>';
+        if(data.bull.indexOf(s)<data.bull.length-1)h+='<span style="color:var(--text3);font-size:10px">→</span>';
       }
-      html+=`</div>`;
-
-      // Cascade opportunities: leader fired, show followers to watch
-      const leaders=data.bull.filter(s=>s.role==='leader');
-      const followers=data.bull.filter(s=>s.role==='follower');
-      if(leaders.length>0&&cascadeFromLedger[sec]){
-        for(const ldr of leaders.slice(0,2)){
-          const ldrFollowers=(cascadeFromLedger[sec]&&cascadeFromLedger[sec].pairLags)?cascadeFromLedger[sec].pairLags[ldr.symbol]:null;
-          if(ldrFollowers){
-            const topF=Object.entries(ldrFollowers).sort((a,b)=>b[1].n-a[1].n).slice(0,3);
-            for(const[fSym,fData] of topF){
-              const alreadySignalled=data.bull.find(b=>b.symbol===fSym);
-              if(!alreadySignalled){
-                oppHtml+=`<div class="insight-box bull" style="margin-bottom:6px">
-                  <strong>${ldr.symbol}</strong> (${ldr.signal}) already fired in <strong>${sec}</strong>.
-                  Historically <strong>${fSym}</strong> follows ~${fData.avgLag}d later (${fData.n} occurrences). Watch for entry signal in ${fSym}.
-                </div>`;
-              }
-            }
+      h+='</div>';
+      const leaders=data.bull.filter(function(s){return s.role==='leader'});
+      for(const ldr of leaders.slice(0,2)){
+        const lk=cascadeFromLedger[sec];
+        if(lk&&lk.pairLags&&lk.pairLags[ldr.symbol]){
+          const topF=Object.entries(lk.pairLags[ldr.symbol]).sort(function(a,b){return b[1].n-a[1].n}).slice(0,3);
+          for(const fEntry of topF){
+            const fSym=fEntry[0],fData=fEntry[1];
+            const already=data.bull.find(function(b){return b.symbol===fSym});
+            if(!already)oppHtml+='<div class="insight bull" style="margin-bottom:6px"><strong>'+ldr.symbol+'</strong> ('+ldr.signal+') fired in <strong>'+sec+'</strong>. Historically <strong>'+fSym+'</strong> follows ~'+fData.avgLag+'d later ('+fData.n+' times). Watch for entry signal in '+fSym+'.</div>';
           }
         }
       }
+      const lk=cascadeFromLedger[sec];
+      if(lk&&lk.leaderScore){const topL=Object.entries(lk.leaderScore).sort(function(a,b){return b[1]-a[1]}).slice(0,3);h+='<div style="margin-top:5px;font-family:var(--mono);font-size:8px;color:var(--text3)">From memory: '+topL.map(function(e){return e[0]+'('+e[1]+'×)'}).join(', ')+'</div>'}
     }
-
-    if(data.bear.length>=1){
-      html+=`<div style="font-family:var(--mono);font-size:8px;color:var(--text2);margin:4px 0">BEAR SIGNALS</div>`;
-      html+=`<div class="cascade-row">`;
-      for(const s of data.bear){
-        html+=`<span class="cascade-stock" style="background:rgba(255,77,109,.1);color:var(--bear);border-color:rgba(255,77,109,.28)">${s.symbol} ${s.signal}</span>`;
-      }
-      html+=`</div>`;
-    }
-
-    // Ledger knowledge for this sector
-    const lk=cascadeFromLedger[sec];
-    if(lk&&Object.keys(lk.leaderScore||{}).length>0){
-      const topLeaders=Object.entries(lk.leaderScore).sort((a,b)=>b[1]-a[1]).slice(0,3);
-      html+=`<div style="margin-top:6px;padding-top:5px;border-top:1px solid var(--border);font-family:var(--mono);font-size:8px;color:var(--text3)">From memory: historical leaders → ${topLeaders.map(([s,n])=>`${s}(${n}x)`).join(', ')}</div>`;
-    }
-
-    html+=`</div>`;
-    container.innerHTML+=html;
+    h+='</div>';container.innerHTML+=h;
   }
   opps.innerHTML=oppHtml||'<div style="color:var(--text3);font-family:var(--mono);font-size:10px;padding:10px">No cascade follow-through opportunities identified today.</div>';
 }
 
-// ── M2 Interdependence Render ─────────────────────────────────
+// ── Interdependence ───────────────────────────────────────────
 function renderInterdep(){
-  const majorSyms=Object.keys(sectorCorrMatrix);
-  if(majorSyms.length===0)return;
-
-  // Interdependence insights
-  const insights=[];
+  const majorSyms=Object.keys(sectorCorrMatrix);if(!majorSyms.length)return;
   const pairs=[];
+  for(const ma of majorSyms)for(const mb of majorSyms){if(ma>=mb)continue;const r=sectorCorrMatrix[ma]&&sectorCorrMatrix[ma][mb]!==undefined?sectorCorrMatrix[ma][mb]:null;if(r!==null)pairs.push({a:ma,b:mb,r})}
+  pairs.sort(function(a,b){return Math.abs(b.r)-Math.abs(a.r)});
+  const hc=pairs.filter(function(p){return p.r>=0.7}).slice(0,3);
+  const nc=pairs.filter(function(p){return p.r<=-0.3}).slice(0,3);
+  let ins='';
+  if(hc.length)ins+='<div class="insight exit"><strong>Highly coupled (avoid opposing signals simultaneously):</strong> '+hc.map(function(p){return p.a+'↔'+p.b+' (r='+p.r+')'}).join(' · ')+'</div>';
+  if(nc.length)ins+='<div class="insight bull"><strong>Natural hedges (negative correlation):</strong> '+nc.map(function(p){return p.a+'↔'+p.b+' (r='+p.r+')'}).join(' · ')+'</div>';
+  document.getElementById('interdepInsights').innerHTML=ins;
+  const corrCls=function(r){return r>=0.7?'cr-sp':r>=0.3?'cr-mp':r<=-0.7?'cr-sn':r<=-0.3?'cr-mn':'cr-n'};
+  let html='<table class="corr-table"><thead><tr><th>Index</th>'+majorSyms.map(function(s){return'<th>'+s+'</th>'}).join('')+'</tr></thead><tbody>';
   for(const ma of majorSyms){
-    for(const mb of majorSyms){
-      if(ma>=mb)continue;
-      const r=sectorCorrMatrix[ma]&&sectorCorrMatrix[ma][mb]!==undefined?sectorCorrMatrix[ma][mb]:null;
-      if(r===null||r===undefined)continue;
-      pairs.push({a:ma,b:mb,r});
-    }
-  }
-  pairs.sort((a,b)=>Math.abs(b.r)-Math.abs(a.r));
-  const highCoupled=pairs.filter(p=>p.r>=0.7).slice(0,3);
-  const negCorr=pairs.filter(p=>p.r<=-0.3).slice(0,3);
-  const uncorr=pairs.filter(p=>Math.abs(p.r)<=0.2).slice(0,3);
-
-  let insHtml='';
-  if(highCoupled.length)insHtml+=`<div class="insight-box warn"><strong>Highly coupled (avoid opposing signals):</strong> ${highCoupled.map(p=>`${p.a}↔${p.b} (r=${p.r})`).join(' · ')}</div>`;
-  if(negCorr.length)insHtml+=`<div class="insight-box bull"><strong>Natural hedges (negative correlation):</strong> ${negCorr.map(p=>`${p.a}↔${p.b} (r=${p.r})`).join(' · ')}</div>`;
-  if(uncorr.length)insHtml+=`<div class="insight-box purple"><strong>Diversification pairs (uncorrelated):</strong> ${uncorr.map(p=>`${p.a}↔${p.b} (r=${p.r})`).join(' · ')}</div>`;
-  document.getElementById('interdepInsights').innerHTML=insHtml;
-
-  // Matrix
-  const corrClass=r=>r>=0.7?'dep-sp':r>=0.3?'dep-mp':r<=-0.7?'dep-sn':r<=-0.3?'dep-mn':'dep-n';
-  let html=`<table class="dep-table"><thead><tr><th>Index</th>${majorSyms.map(s=>`<th>${s}</th>`).join('')}</tr></thead><tbody>`;
-  for(const ma of majorSyms){
-    html+=`<tr><th style="text-align:left">${ma}</th>`;
+    html+='<tr><th style="text-align:left">'+ma+'</th>';
     for(const mb of majorSyms){
       const r=sectorCorrMatrix[ma]&&sectorCorrMatrix[ma][mb]!==undefined?sectorCorrMatrix[ma][mb]:null;
-      if(r===null||r===undefined){html+=`<td style="color:var(--text3)">—</td>`;continue}
-      if(ma===mb){html+=`<td style="background:var(--bg3);color:var(--text2);font-weight:700">1.00</td>`;continue}
-      html+=`<td class="${corrClass(r)}" style="font-weight:700">${r.toFixed(2)}</td>`;
+      if(r===null){html+='<td style="color:var(--text3)">—</td>';continue}
+      if(ma===mb){html+='<td style="background:var(--bg3);color:var(--text2);font-weight:700">1.00</td>';continue}
+      html+='<td class="'+corrCls(r)+'" style="font-weight:700">'+r.toFixed(2)+'</td>';
     }
-    html+=`</tr>`;
+    html+='</tr>';
   }
-  html+=`</tbody></table>`;
+  html+='</tbody></table>';
   document.getElementById('depMatrix').innerHTML=html;
-
-  // Diversification score for current signals
-  const active=allSignals.filter(s=>s.signal!=='WAIT');
-  if(active.length<2){document.getElementById('divScore').innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:10px">Need ≥2 active signals to compute diversification score.</div>';return}
-  const sectors=[...new Set(active.map(s=>s.sector))];
-  let totalCorr=0,pairs2=0;
-  for(let i=0;i<sectors.length;i++){for(let j=i+1;j<sectors.length;j++){
-    const secIdxA=Object.entries(IDX_SECTOR_MAP).find(([,v])=>v===sectors[i]);
-    const secIdxB=Object.entries(IDX_SECTOR_MAP).find(([,v])=>v===sectors[j]);
-    if(secIdxA&&secIdxB){const r=sectorCorrMatrix[secIdxA[0]]&&sectorCorrMatrix[secIdxA[0]][secIdxB[0]]!==undefined?sectorCorrMatrix[secIdxA[0]][secIdxB[0]]:null;if(r!==null&&r!==undefined){totalCorr+=r;pairs2++}}
-  }}
-  const avgCorr=pairs2>0?(totalCorr/pairs2).toFixed(2):null;
-  const divScore=avgCorr!==null?Math.round((1-parseFloat(avgCorr))*100):null;
-  document.getElementById('divScore').innerHTML=divScore!==null?
-    `<div style="font-family:var(--mono);font-size:11px;color:var(--bright)">Diversification Score: <span style="font-size:18px;font-weight:700;color:${divScore>=60?'var(--bull)':divScore>=40?'var(--gold)':'var(--bear)'}">${divScore}/100</span><span style="color:var(--text2);font-size:9px;margin-left:8px">Avg cross-sector corr: ${avgCorr} | ${sectors.length} sectors active</span></div>`:
-    '<div style="color:var(--text3);font-family:var(--mono);font-size:10px">Insufficient sector index overlap to compute score.</div>';
+  // Diversification score
+  const active=allSignals.filter(function(s){return s.signal!=='WAIT'});
+  const sectors=[...new Set(active.map(function(s){return s.sector}))];
+  let tot=0,cnt=0;
+  for(let i=0;i<sectors.length;i++)for(let j=i+1;j<sectors.length;j++){
+    const sA=Object.entries(IDX_SECTOR).find(function(e){return e[1]===sectors[i]});
+    const sB=Object.entries(IDX_SECTOR).find(function(e){return e[1]===sectors[j]});
+    if(sA&&sB){const r=sectorCorrMatrix[sA[0]]&&sectorCorrMatrix[sA[0]][sB[0]]!==undefined?sectorCorrMatrix[sA[0]][sB[0]]:null;if(r!==null){tot+=r;cnt++}}
+  }
+  const divScore=cnt>0?Math.round((1-tot/cnt)*100):null;
+  document.getElementById('divScore').innerHTML=divScore!==null?'<div style="font-family:var(--mono);font-size:11px;color:var(--bright)">Diversification Score: <span style="font-size:18px;font-weight:700;color:'+(divScore>=60?'var(--bull)':divScore>=40?'var(--amber)':'var(--bear)')+'">'+divScore+'/100</span><span style="color:var(--text2);font-size:9px;margin-left:8px">Avg cross-sector corr: '+(tot/cnt).toFixed(2)+' | '+sectors.length+' sectors in signals</span></div>':'<div style="color:var(--text3);font-family:var(--mono);font-size:10px">Insufficient sector index overlap.</div>';
 }
 
-// ── Sector Breadth ────────────────────────────────────────────
-function renderSectorBreadth(){
-  const grid=document.getElementById('sectorGrid');grid.innerHTML='';
-  const sorted=Object.entries(sectorBreadth).sort((a,b)=>b[1].pct-a[1].pct);
+// ── Sectors ───────────────────────────────────────────────────
+function renderSectors(){
+  const g=document.getElementById('sectorGrid');g.innerHTML='';
+  const sorted=Object.entries(sectorBreadth).sort(function(a,b){return b[1].pct-a[1].pct});
   for(const[sec,data] of sorted){
-    const col=data.pct>=60?'var(--bull)':data.pct<=40?'var(--bear)':'var(--gold)';
-    grid.innerHTML+=`<div class="sector-card"><div style="font-size:10px;font-weight:700;color:var(--bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${sec}">${sec}</div><div class="sector-bar"><div class="sector-bar-fill" style="width:${data.pct}%;background:${col}"></div></div><div style="display:flex;gap:8px;font-family:var(--mono);font-size:9px"><span style="color:${col};font-weight:700">${data.pct}% bull</span><span style="color:var(--text3)">${data.bull}/${data.total}</span></div></div>`;
+    const col=data.pct>=60?'var(--bull)':data.pct<=40?'var(--bear)':'var(--amber)';
+    g.innerHTML+='<div class="sc"><div style="font-size:10px;font-weight:700;color:var(--bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+sec+'">'+sec+'</div><div class="sc-bar"><div class="sc-fill" style="width:'+data.pct+'%;background:'+col+'"></div></div><div style="display:flex;gap:8px;font-family:var(--mono);font-size:9px"><span style="color:'+col+';font-weight:700">'+data.pct+'% bull</span><span style="color:var(--text3)">'+data.bull+'/'+data.total+'</span></div></div>';
   }
-  const wGrid=document.getElementById('sectorWinGrid');wGrid.innerHTML='';
-  const ledger=loadLedger();const secStats={};
-  for(const r of ledger.filter(x=>x.status!=='open')){
-    if(!secStats[r.sector])secStats[r.sector]={wins:0,total:0};
-    secStats[r.sector].total++;if(r.status==='win')secStats[r.sector].wins++;
+  const wg=document.getElementById('sectorWinGrid');wg.innerHTML='';
+  const ledger=loadLedger(),secStats={};
+  for(const r of ledger.filter(function(x){return x.status!=='open'})){if(!secStats[r.sector])secStats[r.sector]={wins:0,total:0};secStats[r.sector].total++;if(r.status==='win')secStats[r.sector].wins++}
+  if(!Object.keys(secStats).length){wg.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:9px;padding:8px">Win rates accumulate as signals resolve.</div>';return}
+  for(const[sec,st] of Object.entries(secStats).sort(function(a,b){return(b[1].wins/b[1].total)-(a[1].wins/a[1].total)})){
+    const wr=Math.round(st.wins/st.total*100);const col=wr>=60?'var(--bull)':wr>=45?'var(--amber)':'var(--bear)';
+    wg.innerHTML+='<div class="sc"><div style="font-size:10px;font-weight:700;color:var(--bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+sec+'</div><div class="sc-bar"><div class="sc-fill" style="width:'+wr+'%;background:'+col+'"></div></div><div style="display:flex;gap:8px;font-family:var(--mono);font-size:9px"><span style="color:'+col+';font-weight:700">'+wr+'% WR</span><span style="color:var(--text3)">'+st.wins+'/'+st.total+'</span></div></div>';
   }
-  if(Object.keys(secStats).length===0){wGrid.innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:9px;padding:8px">Win rates accumulate as signals resolve.</div>';return}
-  for(const[sec,st] of Object.entries(secStats).sort((a,b)=>(b[1].wins/b[1].total)-(a[1].wins/a[1].total))){
-    const wr=Math.round(st.wins/st.total*100);
-    const col=wr>=60?'var(--bull)':wr>=45?'var(--gold)':'var(--bear)';
-    wGrid.innerHTML+=`<div class="sector-card"><div style="font-size:10px;font-weight:700;color:var(--bright);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sec}</div><div class="sector-bar"><div class="sector-bar-fill" style="width:${wr}%;background:${col}"></div></div><div style="display:flex;gap:8px;font-family:var(--mono);font-size:9px"><span style="color:${col};font-weight:700">${wr}% WR</span><span style="color:var(--text3)">${st.wins}/${st.total}</span></div></div>`;
-  }
-}
-
-// ── Correlation Table ─────────────────────────────────────────
-function renderCorrTable(){
-  const filterSec=document.getElementById('corrSector').value;
-  const majorSyms=Object.keys(regimeData);
-  let stocks=Object.keys(corrData).filter(s=>allStockData[s] && allStockData[s].index!=='MAJOR INDEX');
-  if(filterSec!=='all')stocks=stocks.filter(s=>allStockData[s]&&allStockData[s].sector===filterSec);
-  stocks=stocks.slice(0,80);
-  if(!stocks.length){document.getElementById('corrTableWrap').innerHTML='<div style="color:var(--text3);font-family:var(--mono);font-size:10px;padding:12px">No data</div>';return}
-  const corrClass=r=>r>=0.7?'dep-sp':r>=0.3?'dep-mp':r<=-0.7?'dep-sn':r<=-0.3?'dep-mn':'dep-n';
-  let html=`<table style="font-family:var(--mono);font-size:9px;border-collapse:collapse;width:100%"><thead><tr><th style="padding:6px 9px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);text-align:left">Symbol</th><th style="padding:6px 9px;background:var(--bg3);color:var(--text2);border:1px solid var(--border)">Sector</th>${majorSyms.map(i=>`<th style="padding:6px 9px;background:var(--bg3);color:var(--gold);border:1px solid var(--border)">${i}</th>`).join('')}<th style="padding:6px 9px;background:var(--bg3);color:var(--text2);border:1px solid var(--border)">Signal</th></tr></thead><tbody>`;
-  for(const sym of stocks){
-    const sig=allSignals.find(s=>s.symbol===sym);
-    const sigBadge=sig&&sig.signal!=='WAIT'?`<span class="badge ${sig.signal.startsWith('B')?'badge-bull':'badge-bear'}" style="font-size:8px">${sig.signal}</span>`:'—';
-    html+=`<tr><td style="padding:4px 9px;border:1px solid var(--border);color:var(--bright);font-weight:700">${sym}</td><td style="padding:4px 9px;border:1px solid var(--border);color:var(--text2);font-size:8px;max-width:90px;overflow:hidden;text-overflow:ellipsis">${(allStockData[sym]&&allStockData[sym].sector)||''}</td>${majorSyms.map(ms=>{const r=corrData[sym]&&corrData[sym][ms]!==undefined?corrData[sym][ms]:null;if(r===null||r===undefined)return`<td style="padding:4px 9px;border:1px solid var(--border);color:var(--text3)">—</td>`;return`<td class="${corrClass(r)}" style="padding:4px 9px;border:1px solid var(--border);text-align:center;font-weight:700">${r.toFixed(2)}</td>`}).join('')}<td style="padding:4px 9px;border:1px solid var(--border);text-align:center">${sigBadge}</td></tr>`;
-  }
-  html+=`</tbody></table>`;
-  document.getElementById('corrTableWrap').innerHTML=html;
 }
 
 // ── Tab ───────────────────────────────────────────────────────
 function switchTab(name){
-  const names=['signals','ledger','anomalies','cascade','interdep','sectors','correlation'];
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',names[i]===name));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`tab-${name}`));
+  const names=['signals','ledger','retcorr','tpsl','multibagger','anomalies','cascade','interdep','sectors'];
+  document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',names[i]===name)});
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.toggle('active',p.id==='tab-'+name)});
 }
 
-// ── File handling ─────────────────────────────────────────────
+// ── File ──────────────────────────────────────────────────────
 function setProgress(pct,msg){document.getElementById('progressBar').style.width=pct+'%';if(msg)document.getElementById('statusLine').textContent=msg}
-function toast(msg,type='info'){const el=document.createElement('div');el.className=`toast toast-${type==='ok'?'ok':type==='err'?'err':'info'}`;el.textContent=msg;document.getElementById('toastContainer').appendChild(el);setTimeout(()=>el.remove(),4000)}
+function toast(msg,type){const el=document.createElement('div');el.className='toast toast-'+(type==='ok'?'ok':type==='err'?'err':'info');el.textContent=msg;document.getElementById('toastContainer').appendChild(el);setTimeout(function(){el.remove()},4500)}
 function handleFileSelect(input){if(input.files.length)readFile(input.files[0])}
 function handleDrop(e){e.preventDefault();document.getElementById('dropZone').classList.remove('drag');if(e.dataTransfer.files.length)readFile(e.dataTransfer.files[0])}
 function readFile(file){
-  setProgress(2,`Reading ${file.name}...`);
+  setProgress(2,'Reading '+file.name+'...');
   const reader=new FileReader();
-  reader.onload=e=>{
-    const bySymbol=parseCSV(e.target.result);
-    const n=Object.keys(bySymbol).length;
-    if(n===0){toast('No valid data','err');return}
-    toast(`Parsed ${n} symbols. Running adaptive engine...`,'info');
-    setTimeout(()=>processAll(bySymbol),50);
+  reader.onload=function(e){
+    const bySym=parseCSV(e.target.result);
+    const n=Object.keys(bySym).length;
+    if(!n){toast('No valid data found','err');return}
+    toast('Parsed '+n+' symbols. Running adaptive engine...','info');
+    setTimeout(function(){processAll(bySym)},50);
   };
   reader.readAsText(file);
 }
 
 // ── Init ──────────────────────────────────────────────────────
-window.addEventListener('load',()=>{
-  loadWeights();
+window.addEventListener('load',function(){
+  initTheme();loadWeights();loadStockTPSL();
   const ledger=loadLedger(),meta=loadMeta();
   sessionCount=meta.sessions||0;
   if(ledger.length>0){
     updatePills();
-    toast(`Memory loaded: ${ledger.length} records, ${sessionCount} sessions. Weights ready.`,'info');
-    renderSLPanel();
-    document.getElementById('slPanel').style.display='block';
+    const learnedCount=Object.keys(stockTPSL).filter(function(k){return stockTPSL[k].is_learned}).length;
+    toast('Memory loaded: '+ledger.length+' records, '+sessionCount+' sessions, '+learnedCount+' stocks with learned TP/SL.','info');
+    renderSLPanel();document.getElementById('slPanel').style.display='block';
   }
 });
 </script>
